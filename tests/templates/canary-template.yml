@@ -1,0 +1,103 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates cloudwatch synthetics canaries for cdh-monitoring active monitoring
+Metadata: {}
+
+Parameters:
+  OutputsPrefix:
+    Type: String
+    Description: The Name of the template used to create application base component
+  CanaryScriptSourceBucket:
+    Type: String
+    Description: Name of the bucket holding Canary scripts
+  SyntheticCanaryName:
+    Type: String
+    Description: The name of the canary. Will be used to fetch the code on the assets bucket
+  Environment:
+    Type: String
+    Description: Canary environment
+  ApplicationTagValue:
+    Type: String
+    Description: Value associated with the Application Tag
+  SchedulerTagValue:
+    Type: String
+    Description: "Name the external scheduler (default: canary-scheduler)"
+    Default: canary-scheduler
+  CanarySchedule:
+    Type: String
+    Description: "Schedule of the canary"
+    Default: rate(0 hour)
+  CanaryAutoStart:
+    Type: String
+    Description: "Auto Start the canary after creration"
+    Default: False
+  WaitTimeSec:
+    Type: String
+    Description: The time to wait in sec before starting the next canary
+    Default: 60
+
+Mappings: {}
+
+Conditions: {}
+
+Resources:
+  NOkCWSynthetic1:
+    Type: AWS::Synthetics::Canary
+    Properties:
+      ArtifactS3Location: !Join
+        - "/"
+        - - "s3:/"
+          - Fn::ImportValue: !Sub "${OutputsPrefix}-CanaryLogBucketName-${AWS::Region}"
+      Code:
+        {
+          Handler: canary.handler,
+          S3Bucket: !Ref CanaryScriptSourceBucket,
+          S3Key: "foo/bar",
+        }
+
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub "${OutputsPrefix}-CanaryExecutionRole-${AWS::Region}"
+      FailureRetentionPeriod: 31
+      RunConfig:
+        TimeoutInSeconds: 840
+        EnvironmentVariables:
+          EnvName: !Ref Environment
+      Name: !Ref SyntheticCanaryName
+      RuntimeVersion: syn-python-selenium-1.0
+      Schedule:
+        Expression: !Ref CanarySchedule
+      StartCanaryAfterCreation: !Ref CanaryAutoStart
+      SuccessRetentionPeriod: 31
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationTagValue
+
+  # This comment should remain
+  NOkCWSynthetic2: # This comment should also remain
+    Type: AWS::Synthetics::Canary
+    Properties:
+      ArtifactS3Location: !Join
+        - "/"
+        - - "s3:/"
+          - Fn::ImportValue: !Sub "${OutputsPrefix}-CanaryLogBucketName-${AWS::Region}"
+      Code:
+        {
+          Handler: canary.handler,
+          S3Bucket: !Ref CanaryScriptSourceBucket,
+          S3Key: "foo2/bar2",
+        }
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub "${OutputsPrefix}-CanaryExecutionRole-${AWS::Region}"
+      FailureRetentionPeriod: 31
+      RunConfig:
+        TimeoutInSeconds: 840
+        EnvironmentVariables:
+          EnvName: !Ref Environment
+      Name: !Ref SyntheticCanaryName
+      RuntimeVersion: syn-python-selenium-1.0
+      Schedule:
+        Expression: !Ref CanarySchedule
+      StartCanaryAfterCreation: !Ref CanaryAutoStart
+      SuccessRetentionPeriod: 31
+
+Outputs: {}

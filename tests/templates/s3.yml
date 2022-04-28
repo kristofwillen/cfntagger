@@ -1,0 +1,62 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  bucketname:
+    Type: String
+    Description: The Name of the template used to create application base component
+    Default: mybucket
+
+Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref bucketname
+      Tags:
+        - Key: Environment
+          Value: prod
+        - Key: Team
+          Value: IOS
+        - Key: Creator
+          Value: BCG213
+
+  AnotherBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: yourbucket
+      Tags:
+        - Key: Name
+          Value: !Sub "bucketname-${AWS::AccountId}"
+        - Key: Environment
+          Value: dev
+        - Key: Team
+          Value: Devops
+
+  BucketWithoutTags:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: yourbucket
+
+  BucketWithSpecialTags:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: yourbucket
+      Tags:
+        - Key: SubTag
+          Value: !Sub "bucketname-${AWS::AccountId}"
+        - Key: JoinTag
+          Value: !Join
+            - "-"
+            - - !Ref bucketname
+              - "foo"
+              - "blah"
+        - Key: SelectTag
+          Value: !Select
+            - 0
+            - !Split
+              - "-"
+              - !Select
+                - 2
+                - !Split
+                  - "/"
+                  - !Ref "AWS::StackId"

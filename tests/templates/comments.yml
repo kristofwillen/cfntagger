@@ -1,0 +1,24 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates EC2 instances
+
+# Line 1 of comments to keep 1/1
+Resources:
+  # Line 2 of comments to keep - OkInstance2
+  OkEC2Instance: # Line 3 of inline to keep 1/1
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: c3.xlarge
+      ImageId: ami-deadbeef
+      Tags:
+        - Key: Creator
+          Value: kristof
+
+  # Line 4 of comments to keep - OkInstance3 1/2
+  # Line 5 of comments to keep - OkInstance3 2/2
+  NOkEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      # Line 6 of comments to keep - tagging 1/1
+      InstanceType: t3.nano
+      ImageId: ami-deadbeef

@@ -1,0 +1,19 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates EC2 instances
+
+Resources:
+  OkEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: c3.xlarge
+      ImageId: ami-deadb33f
+      Tags:
+        - Key: Creator
+          Value: kristof
+
+  NOkEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.nano
+      ImageId: ami-d09f00d

@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+from cfntagger import Tagger
+import argparse
+import os
+from typing import List
+
+
+def dir_path(path):
+    if os.path.isdir(path):
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
+
+
+def parse_dir(directory: str) -> List:
+    rlist = []
+    for parent, _, filenames in os.walk(directory):
+        for fn in filenames:
+            filepath = os.path.join(parent, fn)
+            if fn.endswith("yml") or fn.endswith("yaml"):
+                rlist.append(filepath)
+
+    return rlist
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Add bulk tags to CloudFormation resources")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--file",
+        "-f",
+        type=str,
+        help="The CloudFormation template file to modify",
+    )
+    group.add_argument(
+        "--directory",
+        "-d",
+        type=dir_path,
+        help="A directory containing CFN templates to modify",
+    )
+    parser.add_argument(
+        "--simulate",
+        "-s",
+        action="store_true",
+        help="simulate, do not overwrite the inputfile",
+        required=False,
+    )
+    parser.add_argument(
+        "--git",
+        "-g",
+        action="store_true",
+        help="add git remote and file info as tags",
+        required=False,
+    )
+    args = parser.parse_args()
+
+    if args.directory is not None:
+        cfnfiles = parse_dir(args.directory)
+    else:
+        cfnfiles = [args.file]
+
+    for cfnfile in cfnfiles:
+        cfn_tagger = Tagger(filename=cfnfile, simulate=args.simulate, git=args.git)
+        cfn_tagger.tag()
