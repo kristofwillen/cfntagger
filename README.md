@@ -1,9 +1,12 @@
 # cfntagger
-cfntagger is a Cloudformation tagging tool.
+cfntagger is a Cloudformation tagging tool. It sets tags on resources which support them in Cloudformation templates.
+
+## Why tagging ?
+Tagging resources in AWS is crucial for larger environments.  It helps you to quickly find resources based upon classifiers set in resource tags. Tag keys are often set by convention in larger teams.  So they are prone to frequent change.  And nothing is more boring than sifting through heaps of yaml files modifying tags.  Cfntagger helps you with that.
 
 ## Usage
 ```bash
-$ export CFN_TAGS = '{"Creator": "BCG213", "Team": "Devops"}'
+$ export CFN_TAGS = '{"Creator": "Kristof", "Team": "Devops"}'
 $ cfntagger.py (--filename /path/to/cfn.yml | --directory /path/to/cfntemplates/) [--simulate] [--addgit]
 ```
 
@@ -19,7 +22,7 @@ WARNING: make sure your files are committed in git before running this tool !
 
 You need to define your custom obligatory tags via the CFN_TAGS environment variable.  It must be in JSON format:
 ```bash
-$ export CFN_TAGS = '{"Creator": "BCG213", "Team": "Devops"}'
+$ export CFN_TAGS = '{"Creator": "Kristof", "Team": "Devops"}'
 ````
 
 This will add those tags at all resources who support tags.
