@@ -1,13 +1,11 @@
 from collections import OrderedDict
-from ruamel.yaml.representer import RoundTripRepresenter
-from ruamel.yaml import YAML, round_trip_dump
 import os
 import sys
 import json
-import argparse
-import git
-from colorama import Fore, Style
 from typing import List
+import git
+from ruamel.yaml import YAML
+from colorama import Fore, Style
 
 
 def get_tag_kv(resourcetag, resourcetaglist):
@@ -29,13 +27,13 @@ def get_tag_kv(resourcetag, resourcetaglist):
         return resourcetag, resourcetaglist.get(resourcetag)
 
 class Tagger:
-    def __init__(self, filename: str, simulate: bool = True, git: bool = False):
+    def __init__(self, filename: str, simulate: bool = True, setgit: bool = False):
         self.filename: str = filename
         self.resources: dict = {}
         self.stats: dict = {}
         self.obligatory_tags: dict = {}
         self.simulate = simulate
-        self.git = git
+        self.git = setgit
         self.resourcetypes_to_tag: List = [
             "AWS::ApiGatewayV2::Api",
             "AWS::Athena::DataCatalog",
@@ -103,7 +101,7 @@ class Tagger:
 
 
         try:
-           with open(filename) as cfn:
+            with open(filename) as cfn:
                 self.data = yaml.load(cfn)
         except FileNotFoundError:
             print(f"{Fore.RED}FAIL: Please provide a valid filename{Style.RESET_ALL}")
@@ -271,7 +269,3 @@ class Tagger:
             print("Writing file...")
             with open(self.filename, "wb") as file:
                 return yaml.dump(self.data, file)
-
-
-
-
