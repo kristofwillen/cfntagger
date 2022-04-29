@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="cfntagger",
-    version="0.9.2",
+    version="0.9.3",
     packages=find_packages(),
     scripts=['cfntagger/cfntagger'],
 
@@ -25,8 +25,8 @@ setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Development Status: 5 - Production/Stable",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: GPL",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
 )
