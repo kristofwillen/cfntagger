@@ -1,9 +1,6 @@
-import json
 import sys
 import pytest
 from ruamel.yaml import YAML
-
-from cfntagger import Tagger
 
 class CfnTestTemplate:
     def __init__(self, filename: str):
@@ -17,11 +14,11 @@ class CfnTestTemplate:
             with open(filename) as cfn:
                 data = yaml.load(cfn)
             #data = read_template(filename)
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             print(f"FAIL: Input file {self.filename} not found")
             sys.exit(1)
         except ValueError as e:
-            print(f"FAIL: Please provide a filename with valid YML")
+            print("FAIL: Please provide a filename with valid YML")
             sys.exit(1)
         else:
             self.resources = data.get("Resources")
@@ -49,8 +46,3 @@ class CfnTestTemplate:
 
     def get_nr_of_nokresources(self):
         return len(self.nokresources)
-
-
-if __name__ == "__main__":
-    my_testcase = TestCase("./tests/templates/canary-template.yml")
-    print(my_testcase.get_nokresources())

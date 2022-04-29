@@ -1,7 +1,6 @@
 import pytest
 from ruamel.yaml import YAML
 from cfntagger.cfntagger import get_tag_kv
-from typing import OrderedDict
 
 class Taglist:
     def __init__(self,tagliststr):

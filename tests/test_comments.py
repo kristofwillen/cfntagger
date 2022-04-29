@@ -1,8 +1,7 @@
-import pytest
 import sys
 import re
-import os
 import io
+import pytest
 
 from cfntagger import Tagger
 from tests.unittest import CfnTestTemplate
