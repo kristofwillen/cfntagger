@@ -118,7 +118,7 @@ class Tagger:
         except json.decoder.JSONDecodeError as e:
             print(f"{Fore.RED}FAIL: malformed CFN_TAGS JSON => {e}{Style.RESET_ALL}")
             sys.exit(1)
-        except TypeError as e:
+        except TypeError:
             print(
                 f"{Fore.RED}FAIL: Please set CFN_TAGS as environment variable{Style.RESET_ALL}"
             )
