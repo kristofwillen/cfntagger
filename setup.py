@@ -23,4 +23,10 @@ setup(
         'cfn-lint>=0.58.1',
         'pytest>=7.1.1'
     ],
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Development Status: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GPL",
+    ],
 )
