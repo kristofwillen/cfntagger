@@ -1,0 +1,1 @@
+from .cfntagger import Tagger
