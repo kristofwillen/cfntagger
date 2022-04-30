@@ -1,8 +1,12 @@
-import pytest
+from typing import List
 from ruamel.yaml import YAML
 from cfntagger.cfntagger import get_tag_kv
 
+
 class Taglist:
+    """
+    This class defines some functions to return tag keys/values in testing.
+    """
     def __init__(self,tagliststr):
         self.tag_keys_in_taglist = []
         self.tag_vals_in_taglist = []
@@ -16,10 +20,10 @@ class Taglist:
             self.tag_vals_in_taglist.append(the_value)
 
 
-    def list_the_tag_keys(self):
+    def list_the_tag_keys(self) -> List:
         return self.tag_keys_in_taglist
 
-    def list_the_tag_vals(self):
+    def list_the_tag_vals(self) -> List:
         return self.tag_vals_in_taglist
 
 

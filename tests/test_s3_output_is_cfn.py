@@ -1,5 +1,4 @@
 import pytest
-import sys
 import subprocess
 from cfntagger import Tagger
 

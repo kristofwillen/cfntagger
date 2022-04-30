@@ -1,8 +1,11 @@
 import sys
-import pytest
+from typing import List
 from ruamel.yaml import YAML
 
 class CfnTestTemplate:
+    """
+    This class helps us to deal with testing Cloudformation templates.
+    """
     def __init__(self, filename: str):
         self.filename = filename
         self.resources = []
@@ -17,7 +20,7 @@ class CfnTestTemplate:
         except FileNotFoundError:
             print(f"FAIL: Input file {self.filename} not found")
             sys.exit(1)
-        except ValueError as e:
+        except ValueError:
             print("FAIL: Please provide a filename with valid YML")
             sys.exit(1)
         else:
@@ -29,20 +32,20 @@ class CfnTestTemplate:
             elif res.startswith("NOk"):
                 self.nokresources.append(res)
 
-    def get_okresources(self):
+    def get_okresources(self) -> List:
         return self.okresources
 
-    def get_nokresources(self):
+    def get_nokresources(self) -> List:
         return self.nokresources
 
-    def get_resources(self):
+    def get_resources(self) -> List:
         return self.resources
 
-    def get_nr_of_resources(self):
+    def get_nr_of_resources(self) -> int:
         return len(self.resources)
 
-    def get_nr_of_okresources(self):
+    def get_nr_of_okresources(self) -> int:
         return len(self.okresources)
 
-    def get_nr_of_nokresources(self):
+    def get_nr_of_nokresources(self) -> int:
         return len(self.nokresources)

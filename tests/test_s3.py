@@ -1,7 +1,4 @@
 import pytest
-import sys
-import re
-import os
 
 from cfntagger import Tagger
 
