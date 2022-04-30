@@ -32,7 +32,7 @@ def test_resources(mock_env_single_custom_tag):
 def test_found_tags(mock_env_single_custom_tag):
     cfn_tagger = Tagger(filename=cfn_template, simulate=True)
     cfn_tagger.tag()
-    assert len(cfn_tagger.get_found_tags("NOkCWSynthetic1")) == 6
+    assert len(cfn_tagger.get_found_tags("NOkCWSynthetic1")) == 1
     assert len(cfn_tagger.get_found_tags("NOkCWSynthetic2")) == 0
 
 
