@@ -40,7 +40,3 @@ $ pytest -v
 ## Todo
 
 * Add more unit tests
-
-## Bugs
-* Some comment lines may disappear, this seems a bug in the ruamel module, cfr [bugreport #421](https://sourceforge.net/p/ruamel-yaml/tickets/421/)
-
