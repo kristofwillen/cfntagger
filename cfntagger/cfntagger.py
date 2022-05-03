@@ -2,7 +2,7 @@ from collections import OrderedDict
 import os
 import sys
 import json
-from typing import List
+from typing import List, Dict
 import git
 from ruamel.yaml import YAML
 from colorama import Fore, Style
@@ -135,7 +135,7 @@ class Tagger:
             return []
 
 
-    def get_obligatory_tags(self) -> List:
+    def get_obligatory_tags(self) -> Dict:
         return self.obligatory_tags
 
 
