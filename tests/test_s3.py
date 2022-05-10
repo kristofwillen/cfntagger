@@ -43,7 +43,7 @@ def test_single_added_tags(mock_env_single_custom_tag):
 def test_single_updated_tags(mock_env_single_custom_tag):
     cfn_tagger = Tagger(filename=cfn_template, simulate=True)
     cfn_tagger.tag()
-    assert cfn_tagger.get_updated_tags("MyBucket") == ["Creator"]
+    assert cfn_tagger.get_updated_tags("MyBucket") == []
     assert cfn_tagger.get_updated_tags("AnotherBucket") == []
     assert cfn_tagger.get_updated_tags("BucketWithoutTags") == []
     assert cfn_tagger.get_updated_tags("BucketWithSpecialTags") == []
@@ -60,6 +60,6 @@ def test_two_added_tags(mock_env_two_custom_tag):
 def test_two_updated_tags(mock_env_two_custom_tag):
     cfn_tagger = Tagger(filename=cfn_template, simulate=True)
     cfn_tagger.tag()
-    assert cfn_tagger.get_updated_tags("MyBucket") == ["Creator"]
-    assert cfn_tagger.get_updated_tags("AnotherBucket") == ["Team"]
+    assert cfn_tagger.get_updated_tags("MyBucket") == ["Team"]
+    assert cfn_tagger.get_updated_tags("AnotherBucket") == []
     assert cfn_tagger.get_updated_tags("BucketWithoutTags") == []

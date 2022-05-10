@@ -16,9 +16,9 @@ Resources:
         - Key: Environment
           Value: prod
         - Key: Team
-          Value: IOS
+          Value: Sales
         - Key: Creator
-          Value: BCG213
+          Value: kristof
 
   AnotherBucket:
     Type: AWS::S3::Bucket
