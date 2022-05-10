@@ -188,7 +188,7 @@ class Tagger:
     def tag(self):
         if self.git:
             try:
-                repo = git.Repo(os.getcwd())
+                repo = git.Repo(os.getcwd(), search_parent_directories=True)
                 remote = repo.remote().url
             except git.exc.InValidGitRepositoryError:
                 print("FAIL: this is no git repo, please drop the --git argument")
