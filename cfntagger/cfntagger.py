@@ -34,6 +34,7 @@ class Tagger:
         self.obligatory_tags: dict = {}
         self.simulate = simulate
         self.git = setgit
+        self.has_properties = True
         self.resourcetypes_to_tag: List = [
             "AWS::ApiGatewayV2::Api",
             "AWS::Athena::DataCatalog",
@@ -201,10 +202,13 @@ class Tagger:
             print(
                 f"{Fore.CYAN}[{self.filename}][Resource] {item} => {restype}{Style.RESET_ALL}"
             )
-            if "Tags" in self.resources[item].get("Properties"):
-                restags = self.resources[item].get("Properties").get("Tags")
-                updated = self.change_tags(taglist=restags, resource=item)
-                self.resources[item]["Properties"]["Tags"] = updated
+            if "Properties" in self.resources[item]:
+                if "Tags" in self.resources[item].get("Properties"):
+                    restags = self.resources[item].get("Properties").get("Tags")
+                    updated = self.change_tags(taglist=restags, resource=item)
+                    self.resources[item]["Properties"]["Tags"] = updated
+            else:
+                self.has_properties = False
 
             for obligtag in self.obligatory_tags.keys():
                 if restype in self.resourcetypes_to_tag:
@@ -221,14 +225,24 @@ class Tagger:
                                 "Value": f"{self.obligatory_tags[obligtag]}",
                             }
                         )
-                        if "Tags" not in self.resources[item].get("Properties"):
-                            # Resource support tags, but hasn't any
-                            self.resources[item]["Properties"]["Tags"] = [addtags]
+                        if "Properties" in self.resources[item]:
+                            if "Tags" not in self.resources[item].get("Properties"):
+                                # Resource support tags, but hasn't any
+                                self.resources[item]["Properties"]["Tags"] = [addtags]
 
+                            else:
+                                self.resources[item].get("Properties").get("Tags").append(
+                                    addtags
+                                )
                         else:
-                            self.resources[item].get("Properties").get("Tags").append(
-                                addtags
-                            )
+                            # resource has no Properties defined, this is valid CFN !
+                            # So we need to add a Properties block.  Beware that we're in a
+                            # obligtag loop, so only add it once
+                            if not self.has_properties:
+                                self.resources[item].update({'Properties': OrderedDict({'Tags': [addtags]})})
+                                self.has_properties = True
+
+
             if self.git:
                 gittags= OrderedDict(
                     {
