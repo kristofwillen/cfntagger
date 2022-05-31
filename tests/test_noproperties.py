@@ -25,5 +25,3 @@ def test_found_tags(mock_env_single_custom_tag):
     cfn_tagger = Tagger(filename=cfn_template, simulate=True)
     cfn_tagger.tag()
     assert len(cfn_tagger.get_found_tags("NOkBucket")) == 0
-
-

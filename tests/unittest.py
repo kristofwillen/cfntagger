@@ -14,7 +14,7 @@ class CfnTestTemplate:
 
         try:
             yaml = YAML()
-            with open(filename) as cfn:
+            with open(filename, encoding='utf-8') as cfn:
                 data = yaml.load(cfn)
             #data = read_template(filename)
         except FileNotFoundError:

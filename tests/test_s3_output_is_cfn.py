@@ -1,5 +1,5 @@
-import pytest
 import subprocess
+import pytest
 from cfntagger import Tagger
 
 template = "./tests/templates/s3.yml"
@@ -19,6 +19,7 @@ def test_found_tags(mock_env_single_custom_tag):
     try:
         # s3 template has been changed, is it still valid CFN ?
         command = f"cfn-lint {template}"
+        # pylint: disable=unused-variable
         output = subprocess.run(
             command, shell=True, stdout=subprocess.PIPE, universal_newlines=True
         )

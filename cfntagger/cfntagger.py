@@ -27,6 +27,9 @@ def get_tag_kv(resourcetag, resourcetaglist):
         return resourcetag, resourcetaglist.get(resourcetag)
 
 class Tagger:
+    """
+    Main class for cfntagger
+    """
     def __init__(self, filename: str, simulate: bool = True, setgit: bool = False):
         self.filename: str = filename
         self.resources: dict = {}
@@ -102,7 +105,7 @@ class Tagger:
 
 
         try:
-            with open(filename) as cfn:
+            with open(filename, encoding='utf-8') as cfn:
                 self.data = yaml.load(cfn)
         except FileNotFoundError:
             print(f"{Fore.RED}FAIL: Please provide a valid filename{Style.RESET_ALL}")
