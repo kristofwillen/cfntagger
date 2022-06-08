@@ -16,24 +16,36 @@ def test_found_tags(mock_env_single_custom_tag):
     cfn_tagger = Tagger(filename=template, simulate=False)
     cfn_tagger.tag()
 
-    try:
-        # s3 template has been changed, is it still valid CFN ?
-        command = f"cfn-lint {template}"
-        # pylint: disable=unused-variable
-        output = subprocess.run(
-            command, shell=True, stdout=subprocess.PIPE, universal_newlines=True
-        )
+    # s3 template has been changed, is it still valid CFN ?
+    command = f"cfn-lint {template}"
+    # pylint: disable=unused-variable
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines=True
+    )
 
-    except Exception as e:
-        raise Exception("[FAIL] Could not execute cfn-lint => " + str(e))
+    if result.stderr:
+        try:
+            raise subprocess.CalledProcessError(
+                    returncode = result.returncode,
+                    cmd = result.args,
+                    stderr = result.stderr
+                )
+        except subprocess.CalledProcessError as e:
+            raise Exception("[FAIL] Could not execute cfn-lint => " + str(e))
 
     else:
         # our cfntagger command changes one of our cfn templates, lets reset it
         command = f"cp {template_ok} {template}"
-        try:
-            output = subprocess.run(
-                command, shell=True, stdout=subprocess.PIPE, universal_newlines=True
-            )
+        result = subprocess.run(
+            command, shell=True, stdout=subprocess.PIPE, universal_newlines=True
+        )
 
-        except Exception as e:
-            raise Exception("[FAIL] Could not execute git restore => " + str(e))
+        if result.stderr:
+            try:
+                raise subprocess.CalledProcessError(
+                        returncode = result.returncode,
+                        cmd = result.args,
+                        stderr = result.stderr
+                    )
+            except subprocess.CalledProcessError as e:
+                raise Exception("[FAIL] Could not restore s3 test template => " + str(e))
