@@ -29,7 +29,7 @@ def test_comments(mock_env_single_custom_tag):
     match = re.findall('# Line [1-5]', result)
 
     # Assume we have still some comments
-    assert match is not None
+    assert len(match) > 0
 
     # Assume each comment line is still present
     assert '# Line 1' in match
