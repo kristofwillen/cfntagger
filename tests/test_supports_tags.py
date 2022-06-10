@@ -39,7 +39,7 @@ Resources:
             result = json.loads(output.stdout)
         except json.JSONDecodeError:
             print('Failure in cfn-lint output')
-            assert True is False
+            raise json.JSONDecodeError
         else:
             for failure in result:
                 # we dont want to see cfn-lint failures on E3002
