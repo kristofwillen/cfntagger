@@ -1,4 +1,3 @@
-import pytest
 import subprocess
 import json
 
@@ -11,7 +10,7 @@ resource_template = "/tmp/foo.yml"
 
 
 def test_resource_supports_tags():
-    for resource in cfn_tagger.resourcetypes_to_tag: 
+    for resource in cfn_tagger.resourcetypes_to_tag:
         cfn_file_contents=f"""---
 AWSTemplateFormatVersion: 2010-09-09
 Description: verify if resource supports tags
@@ -26,7 +25,7 @@ Resources:
 
         """
 
-        with open(resource_template, 'w') as cfnt:
+        with open(resource_template, 'w', encoding='utf-8') as cfnt:
             cfnt.write(cfn_file_contents)
 
 
@@ -40,7 +39,7 @@ Resources:
             result = json.loads(output.stdout)
         except json.JSONDecodeError:
             print('Failure in cfn-lint output')
-            assert True == False
+            assert True is False
         else:
             for failure in result:
                 # we dont want to see cfn-lint failures on E3002
