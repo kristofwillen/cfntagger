@@ -54,6 +54,6 @@ Unit tests are provided, sample Cloudformation templates are placed in tests/tem
 $ pytest -v
 ````
 
-## Todo
+## Reference
+[Amazon documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
 
-* Add more unit tests

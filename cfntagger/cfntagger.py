@@ -39,6 +39,7 @@ class Tagger:
         self.git = setgit
         self.has_properties = True
         self.resourcetypes_to_tag: List = [
+            "AWS::AccessAnalyzer::Analyzer",
             "AWS::ApiGatewayV2::Api",
             "AWS::AppStream::Fleet",
             "AWS::AppStream::ImageBuilder",
@@ -84,21 +85,73 @@ class Tagger:
             "AWS::ECS::Task",
             "AWS::ECS::TaskDefinition",
             "AWS::EKS::Cluster",
+            "AWS::EKS::Addon",
+            "AWS::EKS::NodeGroup",
+            "AWS::EKS::FargateProfile",
+            "AWS::ElasticBeanstalk::Environment",
             "AWS::EMR::Cluster",
+            "AWS::EMR::Studio",
             "AWS::ElastiCache::CacheCluster",
+            "AWS::ElastiCache::ParameterGroup",
+            "AWS::ElastiCache::SecurityGroup",
+            "AWS::ElastiCache::ReplicationGroup",
+            "AWS::ElastiCache::SubnetGroup",
             "AWS::ElastiCache::Snapshot",
             "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "AWS::ElasticLoadBalancingV2::TargetGroup",
             "AWS::ElasticSearch::Domain",
+            "AWS::Events::EventBus",
+            "AWS::FMS::Policy",
             "AWS::FSx::FileSystem",
             "AWS::Glue::Crawler",
+            "AWS::Glue::DevEndpoint",
+            "AWS::Glue::MLTransform",
             "AWS::Glue::Job",
+            "AWS::Glue::Registry",
+            "AWS::Glue::Schema",
+            "AWS::Glue::Trigger",
+            "AWS::Glue::Workflow",
             "AWS::IAM::Role",
+            "AWS::IAM::OIDCProvider",
             "AWS::IAM::SAMLProvider",
+            "AWS::IAM::ServerCertificate",
+            "AWS::IAM::User",
+            "AWS::IAM::VirtualMFADevice",
+            "AWS::ImageBuilder::Component",
+            "AWS::ImageBuilder::ContainerRecipe",
+            "AWS::ImageBuilder::DistributionConfiguration",
+            "AWS::ImageBuilder::Image",
+            "AWS::ImageBuilder::ImagePipeline",
+            "AWS::ImageBuilder::ImageRecipe",
+            "AWS::ImageBuilder::InfrastructureConfiguration",
             "AWS::KMS::Key",
+            "AWS::KMS::ReplicaKey",
             "AWS::Kinesis::Stream",
+            "AWS::KinesisAnalyticsV2::Application",
+            "AWS::KinesisFirehose::DeliveryStream",
             "AWS::Lambda::Function",
+            "AWS::Lightsail::Bucket",
+            "AWS::Lightsail::Certificate",
+            "AWS::Lightsail::Container",
+            "AWS::Lightsail::Database",
+            "AWS::Lightsail::Disk",
+            "AWS::Lightsail::Distribution",
+            "AWS::Lightsail::Instance",
+            "AWS::Lightsail::LoadBalancer",
             "AWS::Logs::LogGroup",
+            "AWS::AmazonMQ::Broker",
+            "AWS::AmazonMQ::Configuration",
+            "AWS::MemoryDB::User",
+            "AWS::MemoryDB::ACL",
+            "AWS::MemoryDB::Cluster",
+            "AWS::MemoryDB::ParameterGroup",
+            "AWS::MemoryDB::SubnetGroup",
+            "AWS::MWAA::Environment",
+            "AWS::Neptune::DBSubnetGroup",
+            "AWS::Neptune::DBCluster",
+            "AWS::Neptune::DBClusterParameterGroup",
+            "AWS::Neptune::DBInstance",
+            "AWS::Neptune::DBParameterGroup",
             "AWS::RDS::DBInstance",
             "AWS::Redshift::Cluster",
             "AWS::S3::Bucket",
@@ -203,6 +256,7 @@ class Tagger:
 
         return resultlist
 
+
     def tag(self):
         if self.git:
             try:
@@ -258,7 +312,6 @@ class Tagger:
                             if not self.has_properties:
                                 self.resources[item].update({'Properties': OrderedDict({'Tags': [addtags]})})
                                 self.has_properties = True
-
 
             if self.git:
                 gittags= OrderedDict(

@@ -1,15 +1,20 @@
 import subprocess
 import json
+import pytest
 
 from cfntagger import Tagger
 
-cfn_template = "./tests/templates/ec2.yml"
-cfn_tagger = Tagger(filename=cfn_template, simulate=True)
 
-resource_template = "/tmp/foo.yml"
+@pytest.fixture
+def mock_env_two_custom_tag(monkeypatch):
+    monkeypatch.setenv("CFN_TAGS", '{"Creator": "kristof", "Team": "Devops"}')
 
 
-def test_resource_supports_tags():
+def test_resource_supports_tags(mock_env_two_custom_tag):
+    cfn_template = "./tests/templates/ec2.yml"
+    cfn_tagger = Tagger(filename=cfn_template, simulate=True)
+    resource_template = "/tmp/foo.yml"
+
     for resource in cfn_tagger.resourcetypes_to_tag:
         cfn_file_contents=f"""---
 AWSTemplateFormatVersion: 2010-09-09
