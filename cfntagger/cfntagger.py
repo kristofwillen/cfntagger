@@ -179,7 +179,6 @@ class Tagger:
             "AWS::RDS::DBProxyEndpoint",
             "AWS::RDS::DBSecurityGroup",
             "AWS::RDS::DBSubnetGroup",
-            "AWS::RDS::EventSubscription",
             "AWS::RDS::OptionGroup",
             "AWS::Redshift::Cluster",
             "AWS::Redshift::ClusterParameterGroup",
@@ -218,12 +217,24 @@ class Tagger:
             "AWS::SageMaker::Workteam",
             "AWS::SecretsManager::Secret",
             "AWS::Serverless::Function",
+            "AWS::SES::ContactList",
             "AWS::SNS::Topic",
+            "AWS::SQS::Queue",
+            "AWS::StepFunctions::Activity",
             "AWS::StepFunctions::StateMachine",
+            "AWS::SSM::Document",
             "AWS::SSM::MaintenanceWindow",
             "AWS::SSM::Parameter",
             "AWS::SSM::PatchBaseline",
             "AWS::Synthetics::Canary"
+            "AWS::WAFv2::IPSet",
+            "AWS::WAFv2::RegexPatternSet",
+            "AWS::WAFv2::RuleGroup",
+            "AWS::WAFv2::WebACL",
+            "AWS::WorkSpaces::Workspace",
+            "AWS::WorkSpaces::ConnectionAlias",
+            "AWS::XRay::SamplingRule",
+            "AWS::XRay::Group",
         ]
 
         yaml = YAML()
