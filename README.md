@@ -12,7 +12,7 @@ $ pip install cfntagger
 
 ## Usage
 ```bash
-$ export CFN_TAGS = '{"Creator": "Erlich", "Team": "Incubator"}'
+$ export CFN_TAGS='{"Creator": "Erlich", "Team": "Incubator"}'
 $ cfntagger -h
 usage: cfntagger [-h] (--file FILE | --directory DIRECTORY) [--simulate] [--git]
 
@@ -39,7 +39,7 @@ WARNING: make sure your files are committed in git before running this tool !
 
 You need to define your custom obligatory tags via the CFN_TAGS environment variable.  It must be in JSON format:
 ```bash
-$ export CFN_TAGS = '{"Creator": "Kristof", "Team": "Devops"}'
+$ export CFN_TAGS='{"Creator": "Kristof", "Team": "Devops"}'
 ````
 
 This will add those tags at all resources who support tags.
