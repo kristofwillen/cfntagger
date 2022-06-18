@@ -9,7 +9,7 @@ from cfntagger import Tagger
 def mock_env_two_custom_tag(monkeypatch):
     monkeypatch.setenv("CFN_TAGS", '{"Creator": "kristof", "Team": "Devops"}')
 
-
+@pytest.mark.skip(reason="Too time consuming")
 def test_resource_supports_tags(mock_env_two_custom_tag):
     cfn_template = "./tests/templates/ec2.yml"
     cfn_tagger = Tagger(filename=cfn_template, simulate=True)
