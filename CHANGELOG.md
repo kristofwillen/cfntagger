@@ -1,5 +1,10 @@
 # Cfntagger changes
 
+## v0.9.6
+- 20220618
+- Fix typo in list of resources to tag
+- Improved performance
+
 ## v0.9.5
 - 20220611
 - Fix embarrassing bug where incorrect resources are tagged

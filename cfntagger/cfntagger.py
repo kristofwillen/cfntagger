@@ -226,7 +226,7 @@ class Tagger:
             "AWS::SSM::MaintenanceWindow",
             "AWS::SSM::Parameter",
             "AWS::SSM::PatchBaseline",
-            "AWS::Synthetics::Canary"
+            "AWS::Synthetics::Canary",
             "AWS::WAFv2::IPSet",
             "AWS::WAFv2::RegexPatternSet",
             "AWS::WAFv2::RuleGroup",
@@ -341,21 +341,21 @@ class Tagger:
 
         for item in self.resources:
             restype = self.resources[item].get("Type")
-            self.stats[item] = {"foundtags": [], "updatedtags": [], "addedtags": []}
-            print(" ")
-            print(
-                f"{Fore.CYAN}[{self.filename}][Resource] {item} => {restype}{Style.RESET_ALL}"
-            )
-            if "Properties" in self.resources[item]:
-                if "Tags" in self.resources[item].get("Properties"):
-                    restags = self.resources[item].get("Properties").get("Tags")
-                    updated = self.change_tags(taglist=restags, resource=item)
-                    self.resources[item]["Properties"]["Tags"] = updated
-            else:
-                self.has_properties = False
+            if restype in self.resourcetypes_to_tag:
+                self.stats[item] = {"foundtags": [], "updatedtags": [], "addedtags": []}
+                print(" ")
+                print(
+                    f"{Fore.CYAN}[{self.filename}][Resource] {item} => {restype}{Style.RESET_ALL}"
+                )
+                if "Properties" in self.resources[item]:
+                    if "Tags" in self.resources[item].get("Properties"):
+                        restags = self.resources[item].get("Properties").get("Tags")
+                        updated = self.change_tags(taglist=restags, resource=item)
+                        self.resources[item]["Properties"]["Tags"] = updated
+                else:
+                    self.has_properties = False
 
-            for obligtag in self.obligatory_tags.keys():
-                if restype in self.resourcetypes_to_tag:
+                for obligtag in self.obligatory_tags.keys():
                     if obligtag not in self.stats[item]["foundtags"]:
                         # tag is not present, let's add it
                         print(
@@ -386,29 +386,29 @@ class Tagger:
                                 self.resources[item].update({'Properties': OrderedDict({'Tags': [addtags]})})
                                 self.has_properties = True
 
-            if self.git:
-                gittags= OrderedDict(
-                    {
-                        "Key": "gitrepo",
-                        "Value": remote
-                    }
-                )
-                if "Tags" in self.resources[item].get("Properties"):
+                if self.git:
+                    gittags= OrderedDict(
+                        {
+                            "Key": "gitrepo",
+                            "Value": remote
+                        }
+                    )
+                    if "Tags" in self.resources[item].get("Properties"):
+                        self.resources[item].get("Properties").get("Tags").append(
+                                gittags
+                        )
+                    else:
+                        self.resources[item]["Properties"]["Tags"] = [addtags]
+
+                    gittags= OrderedDict(
+                        {
+                            "Key": "gitfile",
+                            "Value": self.filename
+                        }
+                    )
                     self.resources[item].get("Properties").get("Tags").append(
                             gittags
                     )
-                else:
-                    self.resources[item]["Properties"]["Tags"] = [addtags]
-
-                gittags= OrderedDict(
-                    {
-                        "Key": "gitfile",
-                        "Value": self.filename
-                    }
-                )
-                self.resources[item].get("Properties").get("Tags").append(
-                        gittags
-                )
 
         yaml = YAML()
         yaml.explicit_start = True
