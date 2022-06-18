@@ -2,6 +2,7 @@ import sys
 from typing import List
 from ruamel.yaml import YAML
 
+
 class CfnTestTemplate:
     """
     This class helps us to deal with testing Cloudformation templates.
@@ -16,7 +17,6 @@ class CfnTestTemplate:
             yaml = YAML()
             with open(filename, encoding='utf-8') as cfn:
                 data = yaml.load(cfn)
-            #data = read_template(filename)
         except FileNotFoundError:
             print(f"FAIL: Input file {self.filename} not found")
             sys.exit(1)

@@ -26,6 +26,7 @@ def get_tag_kv(resourcetag, resourcetaglist):
     else:
         return resourcetag, resourcetaglist.get(resourcetag)
 
+
 class Tagger:
     """
     Main class for cfntagger
@@ -387,7 +388,7 @@ class Tagger:
                                 self.has_properties = True
 
                 if self.git:
-                    gittags= OrderedDict(
+                    gittags = OrderedDict(
                         {
                             "Key": "gitrepo",
                             "Value": remote
@@ -400,7 +401,7 @@ class Tagger:
                     else:
                         self.resources[item]["Properties"]["Tags"] = [addtags]
 
-                    gittags= OrderedDict(
+                    gittags = OrderedDict(
                         {
                             "Key": "gitfile",
                             "Value": self.filename
@@ -420,7 +421,7 @@ class Tagger:
 
         if self.simulate:
             print(" ")
-            #self.data['AWSTemplateFormatVersion'] = '2010-09-09'
+            # self.data['AWSTemplateFormatVersion'] = '2010-09-09'
             return yaml.dump(self.data, sys.stdout)
         else:
             print("Writing file...")

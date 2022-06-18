@@ -20,15 +20,15 @@ def test_found_tags(mock_env_single_custom_tag):
     command = f"cfn-lint {template}"
     # pylint: disable=unused-variable
     result = subprocess.run(
-        command, shell=True, stdout=subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines=True
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True
     )
 
     if result.stderr:
         try:
             raise subprocess.CalledProcessError(
-                    returncode = result.returncode,
-                    cmd = result.args,
-                    stderr = result.stderr
+                    returncode=result.returncode,
+                    cmd=result.args,
+                    stderr=result.stderr
                 )
         except subprocess.CalledProcessError as e:
             raise Exception("[FAIL] Could not execute cfn-lint => " + str(e))
@@ -43,9 +43,9 @@ def test_found_tags(mock_env_single_custom_tag):
         if result.stderr:
             try:
                 raise subprocess.CalledProcessError(
-                        returncode = result.returncode,
-                        cmd = result.args,
-                        stderr = result.stderr
+                        returncode=result.returncode,
+                        cmd=result.args,
+                        stderr=result.stderr
                     )
             except subprocess.CalledProcessError as e:
                 raise Exception("[FAIL] Could not restore s3 test template => " + str(e))
