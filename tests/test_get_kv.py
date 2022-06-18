@@ -7,7 +7,7 @@ class Taglist:
     """
     This class defines some functions to return tag keys/values in testing.
     """
-    def __init__(self,tagliststr):
+    def __init__(self, tagliststr):
         self.tag_keys_in_taglist = []
         self.tag_vals_in_taglist = []
 
@@ -25,7 +25,6 @@ class Taglist:
 
     def list_the_tag_vals(self) -> List:
         return self.tag_vals_in_taglist
-
 
 
 tagliststr1 = """\
@@ -47,7 +46,7 @@ taglist2 = Taglist(tagliststr2)
 
 
 def test_get_tag_kv():
-    assert taglist1.list_the_tag_keys() == [ 'tag1', 'tag2' ]
+    assert taglist1.list_the_tag_keys() == ['tag1', 'tag2']
     assert taglist1.list_the_tag_keys() == taglist2.list_the_tag_keys()
     assert taglist1.list_the_tag_vals() == ['foo', 'bar']
     assert taglist1.list_the_tag_vals() == taglist2.list_the_tag_vals()
