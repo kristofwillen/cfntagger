@@ -399,7 +399,7 @@ class Tagger:
                                 gittags
                         )
                     else:
-                        self.resources[item]["Properties"]["Tags"] = [addtags]
+                        self.resources[item]["Properties"]["Tags"] = [gittags]
 
                     gittags = OrderedDict(
                         {
