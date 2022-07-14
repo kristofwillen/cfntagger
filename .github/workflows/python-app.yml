@@ -3,11 +3,7 @@
 
 name: Flake8 and pytest
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 permissions:
   contents: read
