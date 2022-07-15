@@ -1,5 +1,10 @@
 # Cfntagger changes
 
+## v0.9.7
+- 20220715
+- Fix #6 where an UnboudLocalError is produced when passing -g 
+  with an empty CFN_TAGS
+
 ## v0.9.6
 - 20220618
 - Fix typo in list of resources to tag
