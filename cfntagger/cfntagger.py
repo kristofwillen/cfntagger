@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import os
+import re
 import sys
 import json
 from typing import List, Dict
@@ -274,6 +275,9 @@ class Tagger:
 
 
     def get_updated_tags(self, resource: str) -> List:
+        """
+        Returns a list of the changed tags for a resource
+        """
         try:
             return self.stats[resource]["updatedtags"]
         except KeyError:
@@ -285,6 +289,9 @@ class Tagger:
 
 
     def get_found_tags(self, resource: str) -> List:
+        """
+        Returns a list of the present tags on a resource
+        """
         try:
             return self.stats[resource]["foundtags"]
         except KeyError:
@@ -292,10 +299,52 @@ class Tagger:
 
 
     def get_added_tags(self, resource: str) -> List:
+        """
+        Returns a list of the added tags for a resource
+        """
+
         try:
             return self.stats[resource]["addedtags"]
         except KeyError:
             return []
+
+    def get_git_path(self, filename: str) -> str:
+        """
+        Returns the relative path for a file from the repo root dir
+        instead of any abritrary path the user has given us
+        """
+
+        if filename.startswith('./'):
+            filename = filename.replace('./', '')
+
+        full_path = os.getcwd()
+        full_path_with_file = f"{full_path}/{filename}"
+        repo = git.Repo('.', search_parent_directories=True)
+        repodir = f"{repo.working_tree_dir}/"
+        relative_file_path = f"{full_path_with_file}".replace(repodir, '')
+
+        return relative_file_path
+
+
+    def get_git_tags(self, filename: str) -> dict:
+        """
+        Returns a dict of gitrepo & gitfile tags
+        """
+
+        if self.git:
+            try:
+                repo = git.Repo(os.getcwd(), search_parent_directories=True)
+                remote = repo.remote().url
+
+                # remove any tokens from the remote string
+                remote = re.sub('https://[a-zA-Z0-9_]+@', 'https://', remote)
+            except git.exc.InValidGitRepositoryError:
+                print("FAIL: this is no git repo, please drop the --git argument")
+                sys.exit(1)
+            else:
+                gitdict = { 'gitrepo': remote, 'gitfile': self.get_git_path(filename) }
+
+        return gitdict
 
 
     def change_tags(
@@ -332,13 +381,6 @@ class Tagger:
 
 
     def tag(self):
-        if self.git:
-            try:
-                repo = git.Repo(os.getcwd(), search_parent_directories=True)
-                remote = repo.remote().url
-            except git.exc.InValidGitRepositoryError:
-                print("FAIL: this is no git repo, please drop the --git argument")
-                sys.exit(1)
 
         for item in self.resources:
             restype = self.resources[item].get("Type")
@@ -388,10 +430,11 @@ class Tagger:
                                 self.has_properties = True
 
                 if self.git:
+                    found_git_tags = self.get_git_tags(self.filename)
                     gittags = OrderedDict(
                         {
                             "Key": "gitrepo",
-                            "Value": remote
+                            "Value": found_git_tags['gitrepo']
                         }
                     )
                     if "Tags" in self.resources[item].get("Properties"):
@@ -404,7 +447,7 @@ class Tagger:
                     gittags = OrderedDict(
                         {
                             "Key": "gitfile",
-                            "Value": self.filename
+                            "Value": found_git_tags['gitfile']
                         }
                     )
                     self.resources[item].get("Properties").get("Tags").append(
