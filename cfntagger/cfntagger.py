@@ -310,7 +310,7 @@ class Tagger:
 
     def get_git_path(self, filename: str) -> str:
         """
-        Returns the relative path for a file from the repo root dir 
+        Returns the relative path for a file from the repo root dir
         instead of any abritrary path the user has given us
         """
 
@@ -325,7 +325,7 @@ class Tagger:
 
         return relative_file_path
 
-    
+
     def get_git_tags(self, filename: str) -> dict:
         """
         Returns a dict of gitrepo & gitfile tags
@@ -343,7 +343,7 @@ class Tagger:
                 sys.exit(1)
             else:
                 gitdict = { 'gitrepo': remote, 'gitfile': self.get_git_path(filename) }
-        
+
         return gitdict
 
 
@@ -381,7 +381,7 @@ class Tagger:
 
 
     def tag(self):
-        
+
         for item in self.resources:
             restype = self.resources[item].get("Type")
             if restype in self.resourcetypes_to_tag:
