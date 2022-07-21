@@ -15,6 +15,12 @@ testcase = CfnTestTemplate(cfn_template)
 def test_git_tags(mock_env_single_custom_tag):
     cfn_tagger = Tagger(filename=cfn_template, simulate=True, setgit=True)
     cfn_tagger.tag()
+
     assert len(cfn_tagger.get_git_tags(cfn_template)) == 2
     assert './' + cfn_tagger.get_git_tags(cfn_template)['gitfile'] == cfn_template
-    assert cfn_tagger.get_git_tags(cfn_template)['gitrepo'].lower() == "https://github.com/kristofwillen/cfntagger.git"
+
+    repo_git = cfn_tagger.get_git_tags(cfn_template)['gitrepo'].lower()
+    if repo_git.endswith('.git'):
+        assert repo_git == "https://github.com/kristofwillen/cfntagger.git"
+    else:
+        assert repo_git == "https://github.com/kristofwillen/cfntagger"
