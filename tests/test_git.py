@@ -17,4 +17,4 @@ def test_git_tags(mock_env_single_custom_tag):
     cfn_tagger.tag()
     assert len(cfn_tagger.get_git_tags(cfn_template)) == 2
     assert './' + cfn_tagger.get_git_tags(cfn_template)['gitfile'] == cfn_template
-    assert cfn_tagger.get_git_tags(cfn_template)['gitrepo'] == "https://github.com/KristofWillen/cfntagger.git"
+    assert cfn_tagger.get_git_tags(cfn_template)['gitrepo'].lower() == "https://github.com/kristofwillen/cfntagger.git"
