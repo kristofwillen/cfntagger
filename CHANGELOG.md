@@ -4,7 +4,7 @@
 - 20220721
 - Fix #7 where the gitfile sometimes has a wrong relative path
 
-## v0.9.7
+## v0.9.7
 - 20220715
 - Fix #6 where an UnboudLocalError is produced when passing -g
   with an empty CFN_TAGS
