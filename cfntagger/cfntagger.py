@@ -8,7 +8,6 @@ import git
 from ruamel.yaml import YAML
 from colorama import Fore, Style
 
-
 def get_tag_kv(resourcetag, resourcetaglist):
     """
     This function returns the key,value tuple of a taglist. It helps

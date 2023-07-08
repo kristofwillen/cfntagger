@@ -1,5 +1,9 @@
 # Cfntagger changes
 
+## v0.10.0
+- 20230708
+- Add feature request for version number #13
+
 ## v0.9.8
 - 20220721
 - Fix #7 where the gitfile sometimes has a wrong relative path

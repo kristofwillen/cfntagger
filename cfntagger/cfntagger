@@ -3,6 +3,7 @@ from cfntagger import Tagger
 import argparse
 import os
 from typing import List
+from cfntagger.version import __version__
 
 
 def dir_path(path):
@@ -52,6 +53,13 @@ if __name__ == "__main__":
         action="store_true",
         help="add git remote and file info as tags",
         required=False,
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        help="Version of cfntagger",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     args = parser.parse_args()
 
