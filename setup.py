@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 def get_version():
-    with open('./cfntagger/version.py', 'r') as f:
+    with open('./cfntagger/version.py', 'r', encoding='utf-8') as f:
         data = f.readlines()
         return data[0].split('"')[1]
 
