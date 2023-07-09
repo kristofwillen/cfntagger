@@ -43,21 +43,21 @@ def load_config():
         # This ain't a git repo, just try the current dir
         configfile = "./.cfntaggerrc"
 
-    try:
-        config = ConfigParser()
-        config.read(configfile)
-        config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
-        try:
-            configstr = json.dumps(config_parser_dict['Tags'])
-        except KeyError:
-            print('[FAIL] Tags section not defined in .cfntaggerrc !')
-            sys.exit(1)
+        if os.path.isfile(configfile):
+            config = ConfigParser()
+            config.read(configfile)
+            config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
+            try:
+                configstr = json.dumps(config_parser_dict['Tags'])
+            except KeyError:
+                print(f"{Fore.RED}[FAIL] Tags section not defined in .cfntaggerrc !{Style.RESET_ALL}")
+                sys.exit(1)
 
-        return json.dumps(config_parser_dict['Tags'])
+            return json.dumps(config_parser_dict['Tags'])
 
-    except FileNotFoundError:
-        # No config file found, using envvar
-        return os.getenv('CFN_TAGS')
+        else:
+            #.cfntaggerrc does not exist neither in git root dir or in cwd, use envvars
+            return os.getenv('CFN_TAGS')
 
 
 class Tagger:
