@@ -7,6 +7,7 @@ from typing import List, Dict
 import git
 from ruamel.yaml import YAML
 from colorama import Fore, Style
+from configparser import ConfigParser
 
 def get_tag_kv(resourcetag, resourcetaglist):
     """
@@ -25,6 +26,38 @@ def get_tag_kv(resourcetag, resourcetaglist):
         return resourcetag.get('Key'), resourcetag.get('Value')
     else:
         return resourcetag, resourcetaglist.get(resourcetag)
+
+
+def load_config():
+    """
+    This function constructs a JSON string with the tags to add, either found in (in this order):
+        - a configfile in the git root dir (or current dir) in ini-file format
+        - the envvar CFN_TAGS in json format
+    """
+
+    try:
+        # Find a .cfntaggerrc in the git root dir
+        repo = git.Repo('.', search_parent_directories=True)
+        configfile = f"{repo.working_tree_dir}/.cfntaggerrc"
+    except git.exc.InvalidGitRepositoryError:
+        # This ain't a git repo, just try the current dir
+        configfile = "./.cfntaggerrc"
+
+    try:
+        config = ConfigParser()
+        config.read(configfile)
+        config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
+        try:
+            configstr = json.dumps(config_parser_dict['Tags'])
+        except KeyError:
+            print('[FAIL] Tags section not defined in .cfntaggerrc !')
+            sys.exit(1)
+
+        return json.dumps(config_parser_dict['Tags'])
+
+    except FileNotFoundError:
+        # No config file found, using envvar
+        return os.getenv('CFN_TAGS')
 
 
 class Tagger:
@@ -257,7 +290,7 @@ class Tagger:
             )
             sys.exit(1)
 
-        obligatory_tags_str = os.getenv("CFN_TAGS")
+        obligatory_tags_str = load_config()
         try:
             obligatory_tags = json.loads(obligatory_tags_str)
         except json.decoder.JSONDecodeError as e:
