@@ -4,10 +4,11 @@ import re
 import sys
 import json
 from typing import List, Dict
+from configparser import ConfigParser
 import git
 from ruamel.yaml import YAML
 from colorama import Fore, Style
-from configparser import ConfigParser
+
 
 def get_tag_kv(resourcetag, resourcetaglist):
     """
@@ -43,21 +44,20 @@ def load_config():
         # This ain't a git repo, just try the current dir
         configfile = "./.cfntaggerrc"
 
-        if os.path.isfile(configfile):
-            config = ConfigParser()
-            config.read(configfile)
-            config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
-            try:
-                configstr = json.dumps(config_parser_dict['Tags'])
-            except KeyError:
-                print(f"{Fore.RED}[FAIL] Tags section not defined in .cfntaggerrc !{Style.RESET_ALL}")
-                sys.exit(1)
+    if not os.path.isfile(configfile):
+        #.cfntaggerrc does not exist neither in git root dir or in cwd, use envvars
+        return os.getenv('CFN_TAGS')
 
-            return json.dumps(config_parser_dict['Tags'])
+    config = ConfigParser()
+    config.read(configfile)
+    config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
+    try:
+        configstr = json.dumps(config_parser_dict['Tags'])
+    except KeyError:
+        print(f"{Fore.RED}[FAIL] Tags section not defined in .cfntaggerrc !{Style.RESET_ALL}")
+        sys.exit(1)
 
-        else:
-            #.cfntaggerrc does not exist neither in git root dir or in cwd, use envvars
-            return os.getenv('CFN_TAGS')
+    return configstr
 
 
 class Tagger:
