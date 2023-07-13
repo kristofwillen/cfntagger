@@ -6,7 +6,7 @@ Resources:
   OkEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: c3.xlarge
+      InstanceType: a1.xlarge
       ImageId: ami-deadb33f
       Tags:
         - Key: Creator
