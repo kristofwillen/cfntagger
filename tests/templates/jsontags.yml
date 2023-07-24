@@ -9,8 +9,8 @@ Resources:
       InstanceType: a1.xlarge
       ImageId: ami-deadb33f
       Tags:
-        - Key: Creator
-          Value: kristof
+        - Key: Application
+          Value: Aviato
 
   ResourceWithoutTags:
     Type: AWS::EC2::Instance
@@ -26,10 +26,10 @@ Resources:
       Type: String
       Value: ADeployPolicy
       Tags:
-          CostCenter: sales
-          Application: aviato
+          CostCenter: Sales
+          Application: Aviato
           Owner: erlich@aviato.com
-          Environment: production
+          Environment: Production
 
   ResourceWithoutJsonTags:
     Type: AWS::SSM::Parameter

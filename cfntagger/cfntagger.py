@@ -46,7 +46,10 @@ def load_config():
 
     if not os.path.isfile(configfile):
         #.cfntaggerrc does not exist neither in git root dir or in cwd, use envvars
+        print('[INFO] Using config from environment variable')
         return os.getenv('CFN_TAGS')
+    else:
+        print('[INFO] Using config from config file')
 
     config = ConfigParser()
     config.read(configfile)
@@ -731,17 +734,18 @@ class Tagger:
                         self.stats[item]["addedtags"].append(obligtag)
 
                         if restype in self.resourcetypes_json:
-                            print(f'DBUG: JSON adding {obligtag}')
-                            addtags = ((obligtag, self.obligatory_tags[obligtag]))
+                            addtags = OrderedDict(
+                                {
+                                    obligtag: self.obligatory_tags[obligtag]
+                                }
+                            )
                         else:
-                            print(f'DBUG: nonJSON adding {obligtag}')
                             addtags = OrderedDict(
                                 {
                                     "Key": obligtag,
                                     "Value": f"{self.obligatory_tags[obligtag]}",
                                 }
                             )
-                        print(type(self.resources[item]['Properties']['Tags']))
 
                         if "Properties" in self.resources[item]:
                             if "Tags" not in self.resources[item].get("Properties"):
@@ -762,12 +766,19 @@ class Tagger:
 
                 if self.git:
                     found_git_tags = self.get_git_tags(self.filename)
-                    gittags = OrderedDict(
-                        {
-                            "Key": "gitrepo",
-                            "Value": found_git_tags['gitrepo']
-                        }
-                    )
+                    if restype in self.resourcetypes_json:
+                        gittags = OrderedDict(
+                            {
+                                "gitrepo": found_git_tags['gitrepo']
+                            }
+                        )
+                    else:
+                        gittags = OrderedDict(
+                            {
+                                "Key": "gitrepo",
+                                "Value": found_git_tags['gitrepo']
+                            }
+                        )
                     if "Tags" in self.resources[item].get("Properties"):
                         self.resources[item].get("Properties").get("Tags").append(
                                 gittags
@@ -775,12 +786,19 @@ class Tagger:
                     else:
                         self.resources[item]["Properties"]["Tags"] = [gittags]
 
-                    gittags = OrderedDict(
-                        {
-                            "Key": "gitfile",
-                            "Value": found_git_tags['gitfile']
-                        }
-                    )
+                    if restype in self.resourcetypes_json:
+                        gittags = OrderedDict(
+                            {
+                                "gitfile": found_git_tags['gitfile']
+                            }
+                        )
+                    else:
+                        gittags = OrderedDict(
+                            {
+                                "Key": "gitfile",
+                                "Value": found_git_tags['gitfile']
+                            }
+                        )
                     self.resources[item].get("Properties").get("Tags").append(
                             gittags
                     )
