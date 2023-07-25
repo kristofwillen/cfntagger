@@ -35,5 +35,3 @@ def test_json_tags(mock_env_single_custom_tag):
     assert len(cfn_tagger.get_added_tags("ResourceWithJsonTags")) == 0
     assert len(cfn_tagger.get_updated_tags("ResourceWithJsonTags")) == 1
     assert cfn_tagger.get_updated_tags("ResourceWithJsonTags") == ['Environment']
-
-
