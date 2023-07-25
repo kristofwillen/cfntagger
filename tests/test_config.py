@@ -1,5 +1,5 @@
+#import os
 import pytest
-import os
 
 from cfntagger import Tagger
 from tests.unittest import CfnTestTemplate
