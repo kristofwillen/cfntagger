@@ -2,7 +2,7 @@
 
 GITFILES=$(shell git ls-files '*.py')
 
-all: clean test build
+all: clean lint test build
 
 test:
 	pipenv run pytest -vv
