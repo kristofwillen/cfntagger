@@ -77,7 +77,6 @@ class Tagger:
         self.has_properties = True
         self.resourcetypes_json = [
             "AWS::AmplifyUIBuilder::Form",
-            "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Component",
             "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Theme",
@@ -124,7 +123,6 @@ class Tagger:
             "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Theme",
             "AWS::AccessAnalyzer::Analyzer",
-            "AWS::ApiGatewayV2::Api",
             "AWS::ApiGatewayV2::Api",
             "AWS::ApiGateway::ClientCertificate",
             "AWS::ApiGateway::DomainName",
