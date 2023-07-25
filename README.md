@@ -25,6 +25,7 @@ options:
                         A directory containing CFN templates to modify
   --simulate, -s        simulate, do not overwrite the inputfile
   --git, -g             add git remote and file info as tags
+  --version, -v         show version
 ```
 
 where :
@@ -37,9 +38,35 @@ The 'file' and 'directory' arguments are mutually exclusive.
 
 WARNING: make sure your files are committed in git before running this tool !
 
+## Configuration
+There are two ways of configuring cfntagger:
+
+### Configfile
+The configfile `.cfntaggerrc` must be present in either:
+* the root of your git repo
+* the current directory from where you launch cfntagger
+
+The configfile is in ini-file format, with one section `Tags`, where tags are placed in key-value pairs:
+```
+[Tags]
+tag1=tag1value
+tag2=tag2value
+````
+
+Example:
+````
+[Tags]
+Environment=Production
+CostCenter=Sales
+Application=Aviato
+````
+
+If the file `.cfntaggerrc` isn't present in one of those locations, the configuration via environment variables is used.
+
+### Environment variables
 You need to define your custom obligatory tags via the CFN_TAGS environment variable.  It must be in JSON format:
 ```bash
-$ export CFN_TAGS='{"Creator": "Kristof", "Team": "Devops"}'
+$ export CFN_TAGS='{"Creator": "Dinesh", "Team": "Devops"}'
 ````
 
 This will add those tags at all resources who support tags.

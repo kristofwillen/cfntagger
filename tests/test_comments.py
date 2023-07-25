@@ -37,6 +37,7 @@ def test_comments(mock_env_single_custom_tag):
     assert '# Line 3' in match
     assert '# Line 4' in match
     assert '# Line 5' in match
+    assert '# Line 6' in match
 
     # Assume all comments still present
     assert len(match) == 6

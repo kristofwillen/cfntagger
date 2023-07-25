@@ -2,7 +2,10 @@
 
 ## v0.10.0
 - 20230708
-- Add feature request for version number #13
+- Add feature request for version number #5 (configfile)
+- Add feature request for version number #13 (version)
+- Support for additional CloudFormation resources
+- Always generate correct tag format (json/list), cfr issue #14
 
 ## v0.9.8
 - 20220721
