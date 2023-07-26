@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
 
+def get_version():
+    with open('./cfntagger/version.py', 'r', encoding='utf-8') as f:
+        data = f.readlines()
+        return data[0].split('"')[1]
+
 setup(
     name="cfntagger",
-    version="0.9.8",
+    version=get_version(),
     packages=find_packages(),
     scripts=['cfntagger/cfntagger'],
 

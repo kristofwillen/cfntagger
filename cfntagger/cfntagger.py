@@ -4,6 +4,7 @@ import re
 import sys
 import json
 from typing import List, Dict
+from configparser import ConfigParser
 import git
 from ruamel.yaml import YAML
 from colorama import Fore, Style
@@ -28,6 +29,40 @@ def get_tag_kv(resourcetag, resourcetaglist):
         return resourcetag, resourcetaglist.get(resourcetag)
 
 
+def load_config():
+    """
+    This function constructs a JSON string with the tags to add, either found in (in this order):
+        - a configfile in the git root dir (or current dir) in ini-file format
+        - the envvar CFN_TAGS in json format
+    """
+
+    try:
+        # Find a .cfntaggerrc in the git root dir
+        repo = git.Repo('.', search_parent_directories=True)
+        configfile = f"{repo.working_tree_dir}/.cfntaggerrc"
+    except git.exc.InvalidGitRepositoryError:
+        # This ain't a git repo, just try the current dir
+        configfile = "./.cfntaggerrc"
+
+    if not os.path.isfile(configfile):
+        #.cfntaggerrc does not exist neither in git root dir or in cwd, use envvars
+        print('[INFO] Using config from environment variable')
+        return os.getenv('CFN_TAGS')
+    else:
+        print('[INFO] Using config from config file')
+
+    config = ConfigParser()
+    config.read(configfile)
+    config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
+    try:
+        configstr = json.dumps(config_parser_dict['Tags'])
+    except KeyError:
+        print(f"{Fore.RED}[FAIL] Tags section not defined in .cfntaggerrc !{Style.RESET_ALL}")
+        sys.exit(1)
+
+    return configstr
+
+
 class Tagger:
     """
     Main class for cfntagger
@@ -40,47 +75,243 @@ class Tagger:
         self.simulate = simulate
         self.git = setgit
         self.has_properties = True
+        self.resourcetypes_json = [
+            "AWS::AmplifyUIBuilder::Form",
+            "AWS::AmplifyUIBuilder::Component",
+            "AWS::AmplifyUIBuilder::Form",
+            "AWS::AmplifyUIBuilder::Theme",
+            "AWS::ApiGatewayV2::Api",
+            "AWS::ApiGatewayV2::DomainName",
+            "AWS::ApiGatewayV2::Stage",
+            "AWS::ApiGatewayV2::VpcLink",
+            "AWS::Batch::ComputeEnvironment",
+            "AWS::Batch::JobDefinition",
+            "AWS::Batch::JobQueue",
+            "AWS::Batch::SchedulingPolicy",
+            "AWS::CodeStarNotifications::NotificationRule",
+            "AWS::DAX::Cluster",
+            "AWS::FIS::ExperimentTemplate",
+            "AWS::Glue::Crawler",
+            "AWS::Glue::DataQualityRuleset",
+            "AWS::Glue::DevEndpoint",
+            "AWS::Glue::Job",
+            "AWS::Glue::MLTransform",
+            "AWS::Glue::Trigger",
+            "AWS::Glue::Workflow",
+            "AWS::M2::Application",
+            "AWS::M2::Environment",
+            "AWS::MSK::Cluster",
+            "AWS::MSK::ServerlessCluster",
+            "AWS::MSK::VpcConnection",
+            "AWS::MWAA::Environment",
+            "AWS::Pipes::Pipe",
+            "AWS::ResilienceHub::App",
+            "AWS::ResilienceHub::ResiliencyPolicy",
+            "AWS::ResourceExplorer2::Index",
+            "AWS::ResourceExplorer2::View",
+            "AWS::ServiceCatalogAppRegistry::Application",
+            "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+            "AWS::SecurityHub::AutomationRule",
+            "AWS::SecurityHub::Hub",
+            "AWS::SSM::Parameter",
+        ]
         self.resourcetypes_to_tag: List = [
+            "AWS::ACMPCA::CertificateAuthority",
+            "AWS::Amplify::App",
+            "AWS::Amplify::Branch",
+            "AWS::AmplifyUIBuilder::Component",
+            "AWS::AmplifyUIBuilder::Form",
+            "AWS::AmplifyUIBuilder::Theme",
             "AWS::AccessAnalyzer::Analyzer",
             "AWS::ApiGatewayV2::Api",
+            "AWS::ApiGateway::ClientCertificate",
+            "AWS::ApiGateway::DomainName",
+            "AWS::ApiGateway::RestApi",
+            "AWS::ApiGateway::Stage",
+            "AWS::ApiGateway::UsagePlan",
+            "AWS::ApiGateway::VpcLink",
+            "AWS::ApiGatewayV2::Api",
+            "AWS::ApiGatewayV2::DomainName",
+            "AWS::ApiGatewayV2::Stage",
+            "AWS::ApiGatewayV2::VpcLink",
+            "AWS::AppConfig::Application",
+            "AWS::AppConfig::ConfigurationProfile",
+            "AWS::AppConfig::Deployment",
+            "AWS::AppConfig::DeploymentStrategy",
+            "AWS::AppConfig::Environment",
+            "AWS::AppConfig::Extension",
+            "AWS::AppConfig::ExtensionAssociation",
+            "AWS::AppFlow::Flow",
+            "AWS::AppIntegrations::DataIntegration",
+            "AWS::AppIntegrations::EventIntegration",
+            "AWS::ApplicationInsights::Application",
+            "AWS::AppMesh::GatewayRoute",
+            "AWS::AppMesh::Mesh",
+            "AWS::AppMesh::Route",
+            "AWS::AppMesh::VirtualGateway",
+            "AWS::AppMesh::VirtualNode",
+            "AWS::AppMesh::VirtualRouter",
+            "AWS::AppMesh::VirtualService",
+            "AWS::AppStream::AppBlock",
+            "AWS::AppStream::AppBlockBuilder",
+            "AWS::AppStream::Application",
             "AWS::AppStream::Fleet",
             "AWS::AppStream::ImageBuilder",
             "AWS::AppStream::Stack",
             "AWS::AppSync::GraphQLApi",
+            "AWS::APS::RuleGroupsNamespace",
+            "AWS::APS::Workspace",
+            "AWS::Athena::CapacityReservation",
             "AWS::Athena::DataCatalog",
             "AWS::Athena::WorkGroup",
+            "AWS::AuditManager::Assessment",
+            "AWS::BackupGateway::Hypervisor",
+            "AWS::Batch::ComputeEnvironment",
+            "AWS::Batch::JobDefinition",
+            "AWS::Batch::JobQueue",
+            "AWS::Batch::SchedulingPolicy",
+            "AWS::BillingConductor::BillingGroup",
+            "AWS::BillingConductor::CustomLineItem",
+            "AWS::BillingConductor::PricingPlan",
+            "AWS::BillingConductor::PricingRule",
+            "AWS::Cassandra::Keyspace",
+            "AWS::Cassandra::Table",
             "AWS::CertificateManager::Certificate",
-            "AWS::Cloud9::Environment",
+            "AWS::CleanRooms::Collaboration",
+            "AWS::CleanRooms::ConfiguredTable",
+            "AWS::CleanRooms::ConfiguredTableAssociation",
+            "AWS::CleanRooms::Membership",
+            "AWS::Cloud9::EnvironmentEC2",
+            "AWS::CloudFormation::Stack",
+            "AWS::CloudFormation::StackSet",
             "AWS::CloudFront::Distribution",
+            "AWS::CloudFront::StreamingDistribution",
+            "AWS::CloudTrail::Channel",
+            "AWS::CloudTrail::EventDataStore",
             "AWS::CloudTrail::Trail",
+            "AWS::CloudWatch::InsightRule",
+            "AWS::CloudWatch::MetricStream",
             "AWS::CodeBuild::Project",
+            "AWS::CodeBuild::ReportGroup",
             "AWS::CodeArtifact::Domain",
             "AWS::CodeArtifact::Repository",
             "AWS::CodeCommit::Repository",
             "AWS::CodeDeploy::Application",
+            "AWS::CodeDeploy::DeploymentGroup",
+            "AWS::CodeGuruProfiler::ProfilingGroup",
             "AWS::CodeGuruReviewer::RepositoryAssociation",
             "AWS::CodePipeline::CustomActionType",
             "AWS::CodePipeline::Pipeline",
+            "AWS::CodeStarConnections::Connection",
+            "AWS::CodeStarNotifications::NotificationRule",
+            "AWS::Comprehend::DocumentClassifier",
+            "AWS::Comprehend::Flywheel",
+            "AWS::Config::AggregationAuthorization",
+            "AWS::Config::ConfigurationAggregator",
+            "AWS::Config::StoredQuery",
+            "AWS::Connect::ContactFlow",
+            "AWS::Connect::ContactFlowModule",
+            "AWS::Connect::EvaluationForm",
+            "AWS::Connect::HoursOfOperation",
+            "AWS::Connect::PhoneNumber",
+            "AWS::Connect::Prompt",
+            "AWS::Connect::QuickConnect",
+            "AWS::Connect::Rule",
+            "AWS::Connect::TaskTemplate",
+            "AWS::Connect::User",
+            "AWS::ConnectCampaigns::Campaign",
+            "AWS::CustomerProfiles::CalculatedAttributeDefinition",
+            "AWS::CustomerProfiles::Domain",
+            "AWS::CustomerProfiles::EventStream",
+            "AWS::CustomerProfiles::Integration",
+            "AWS::CustomerProfiles::ObjectType",
             "AWS::DataBrew::Dataset",
             "AWS::DataBrew::Job",
             "AWS::DataBrew::Project",
             "AWS::DataBrew::Recipe",
+            "AWS::DataBrew::Ruleset",
             "AWS::DataBrew::Schedule",
+            "AWS::DLM::LifecyclePolicy",
+            "AWS::DataSync::Agent",
+            "AWS::DataSync::LocationEFS",
+            "AWS::DataSync::LocationFSxLustre",
+            "AWS::DataSync::LocationFSxONTAP",
+            "AWS::DataSync::LocationFSxOpenZFS",
+            "AWS::DataSync::LocationFSxWindows",
+            "AWS::DataSync::LocationHDFS",
+            "AWS::DataSync::LocationNFS",
+            "AWS::DataSync::LocationObjectStorage",
+            "AWS::DataSync::LocationS3",
+            "AWS::DataSync::LocationSMB",
+            "AWS::DataSync::StorageSystem",
+            "AWS::DataSync::Task",
+            "AWS::DAX::Cluster",
+            "AWS::Detective::Graph",
+            "AWS::DeviceFarm::DevicePool",
+            "AWS::DeviceFarm::InstanceProfile",
+            "AWS::DeviceFarm::NetworkProfile",
+            "AWS::DeviceFarm::Project",
+            "AWS::DeviceFarm::TestGridProject",
+            "AWS::DeviceFarm::VPCEConfiguration",
+            "AWS::DMS::Endpoint",
+            "AWS::DMS::EventSubscription",
+            "AWS::DMS::ReplicationInstance",
+            "AWS::DMS::ReplicationSubnetGroup",
+            "AWS::DMS::ReplicationTask",
             "AWS::DocDB::DBCluster",
+            "AWS::DocDB::DBClusterParameterGroup",
             "AWS::DocDB::DBInstance",
             "AWS::DocDB::DBSubnetGroup",
+            "AWS::DocDBElastic::Cluster",
             "AWS::DynamoDB::Table",
+            "AWS::EC2::CarrierGateway",
+            "AWS::EC2::CustomerGateway",
+            "AWS::EC2::DHCPOptions",
             "AWS::EC2::EIP",
+            "AWS::EC2::FlowLog",
             "AWS::EC2::Instance",
             "AWS::EC2::InternetGateway",
+            "AWS::EC2::IPAM",
+            "AWS::EC2::IPAMPool",
+            "AWS::EC2::IPAMResourceDiscovery",
+            "AWS::EC2::IPAMResourceDiscoveryAssociation",
+            "AWS::EC2::KeyPair",
+            "AWS::EC2::LocalGatewayRouteTable",
+            "AWS::EC2::LocalGatewayRouteTableVirtualInterfaceGroupAssociation",
+            "AWS::EC2::LocalGatewayRouteTableVPCAssociation",
+            "AWS::EC2::NatGateway",
             "AWS::EC2::NetworkAcl",
+            "AWS::EC2::NetworkInsightsAccessScope",
+            "AWS::EC2::NetworkInsightsAccessScopeAnalysis",
+            "AWS::EC2::NetworkInsightsAnalysis",
+            "AWS::EC2::NetworkInsightsPath",
+            "AWS::EC2::NetworkInterface",
+            "AWS::EC2::PlacementGroup",
+            "AWS::EC2::PrefixList",
             "AWS::EC2::RouteTable",
             "AWS::EC2::SecurityGroup",
             "AWS::EC2::Subnet",
+            "AWS::EC2::TrafficMirrorFilter",
+            "AWS::EC2::TrafficMirrorSession",
+            "AWS::EC2::TrafficMirrorTarget",
             "AWS::EC2::TransitGateway",
+            "AWS::EC2::TransitGatewayAttachment",
+            "AWS::EC2::TransitGatewayConnect",
+            "AWS::EC2::TransitGatewayMulticastDomain",
+            "AWS::EC2::TransitGatewayPeeringAttachment",
+            "AWS::EC2::TransitGatewayRouteTable",
+            "AWS::EC2::TransitGatewayVpcAttachment",
+            "AWS::EC2::VerifiedAccessEndpoint",
+            "AWS::EC2::VerifiedAccessGroup",
+            "AWS::EC2::VerifiedAccessInstance",
+            "AWS::EC2::VerifiedAccessTrustProvider",
+            "AWS::EC2::VPNConnection",
+            "AWS::EC2::VPNGateway",
             "AWS::EC2::Volume",
             "AWS::EC2::VPC",
+            "AWS::ECR::PublicRepository",
             "AWS::ECR::Repository",
+            "AWS::ECS::CapacityProvider",
             "AWS::ECS::Cluster",
             "AWS::ECS::ContainerInstance",
             "AWS::ECS::Service",
@@ -90,22 +321,49 @@ class Tagger:
             "AWS::EKS::Addon",
             "AWS::EKS::NodeGroup",
             "AWS::EKS::FargateProfile",
+            "AWS::EKS::IdentityProviderConfig",
             "AWS::ElasticBeanstalk::Environment",
-            "AWS::EMR::Cluster",
-            "AWS::EMR::Studio",
             "AWS::ElastiCache::CacheCluster",
             "AWS::ElastiCache::ParameterGroup",
             "AWS::ElastiCache::SecurityGroup",
             "AWS::ElastiCache::ReplicationGroup",
             "AWS::ElastiCache::SubnetGroup",
             "AWS::ElastiCache::Snapshot",
+            "AWS::ElasticLoadBalancing::LoadBalancer",
             "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "AWS::ElasticLoadBalancingV2::TargetGroup",
             "AWS::ElasticSearch::Domain",
+            "AWS::EMR::Cluster",
+            "AWS::EMR::Studio",
+            "AWS::EMRServerless::Application",
+            "AWS::EMRContainers::VirtualCluster",
             "AWS::Events::EventBus",
+            "AWS::Evidently::Experiment",
+            "AWS::Evidently::Feature",
+            "AWS::Evidently::Launch",
+            "AWS::Evidently::Project",
+            "AWS::Evidently::Segment",
+            "AWS::FinSpace::Environment",
+            "AWS::FIS::ExperimentTemplate",
             "AWS::FMS::Policy",
+            "AWS::FMS::ResourceSet",
+            "AWS::Forecast::Dataset",
+            "AWS::Forecast::DatasetGroup",
+            "AWS::FraudDetector::Detector",
+            "AWS::FraudDetector::EntityType",
+            "AWS::FraudDetector::EventType",
+            "AWS::FraudDetector::Label",
+            "AWS::FraudDetector::List",
+            "AWS::FraudDetector::Outcome",
+            "AWS::FraudDetector::Variable",
+            "AWS::FSx::DataRepositoryAssociation",
             "AWS::FSx::FileSystem",
+            "AWS::FSx::Snapshot",
+            "AWS::FSx::StorageVirtualMachine",
+            "AWS::FSx::Volume",
+            "AWS::GlobalAccelerator::Accelerator",
             "AWS::Glue::Crawler",
+            "AWS::Glue::DataQualityRuleset",
             "AWS::Glue::DevEndpoint",
             "AWS::Glue::MLTransform",
             "AWS::Glue::Job",
@@ -113,6 +371,14 @@ class Tagger:
             "AWS::Glue::Schema",
             "AWS::Glue::Trigger",
             "AWS::Glue::Workflow",
+            "AWS::GroundStation::Config",
+            "AWS::GroundStation::DataflowEndpointGroup",
+            "AWS::GroundStation::MissionProfile",
+            "AWS::GuardDuty::Detector",
+            "AWS::GuardDuty::Filter",
+            "AWS::GuardDuty::IPSet",
+            "AWS::GuardDuty::ThreatIntelSet",
+            "AWS::HealthLake::FHIRDatastore",
             "AWS::IAM::Role",
             "AWS::IAM::OIDCProvider",
             "AWS::IAM::SAMLProvider",
@@ -126,11 +392,20 @@ class Tagger:
             "AWS::ImageBuilder::ImagePipeline",
             "AWS::ImageBuilder::ImageRecipe",
             "AWS::ImageBuilder::InfrastructureConfiguration",
+            "AWS::InternetMonitor::Monitor",
+            "AWS::Kendra::DataSource",
+            "AWS::Kendra::Faq",
+            "AWS::Kendra::Index",
+            "AWS::KendraRanking::ExecutionPlan",
+            "AWS::SSMIncidents::ReplicationSet",
+            "AWS::SSMIncidents::ResponsePlan",
             "AWS::KMS::Key",
             "AWS::KMS::ReplicaKey",
             "AWS::Kinesis::Stream",
             "AWS::KinesisAnalyticsV2::Application",
             "AWS::KinesisFirehose::DeliveryStream",
+            "AWS::KinesisVideo::SignalingChannel",
+            "AWS::KinesisVideo::Stream",
             "AWS::Lambda::Function",
             "AWS::Lightsail::Bucket",
             "AWS::Lightsail::Certificate",
@@ -141,6 +416,11 @@ class Tagger:
             "AWS::Lightsail::Instance",
             "AWS::Lightsail::LoadBalancer",
             "AWS::Logs::LogGroup",
+            "AWS::LookoutEquipment::InferenceScheduler",
+            "AWS::M2::Application",
+            "AWS::M2::Environment",
+            "AWS::Macie::AllowList",
+            "AWS::ManagedBlockchain::Accessor",
             "AWS::AmazonMQ::Broker",
             "AWS::AmazonMQ::Configuration",
             "AWS::MemoryDB::User",
@@ -148,6 +428,9 @@ class Tagger:
             "AWS::MemoryDB::Cluster",
             "AWS::MemoryDB::ParameterGroup",
             "AWS::MemoryDB::SubnetGroup",
+            "AWS::MSK::Cluster",
+            "AWS::MSK::ServerlessCluster",
+            "AWS::MSK::VpcConnection",
             "AWS::MWAA::Environment",
             "AWS::Neptune::DBSubnetGroup",
             "AWS::Neptune::DBCluster",
@@ -167,12 +450,31 @@ class Tagger:
             "AWS::NetworkManager::SiteToSiteVpnAttachment",
             "AWS::NetworkManager::VpcAttachment",
             "AWS::OpenSearchService::Domain",
+            "AWS::OpenSearchServerless::Collection",
+            "AWS::OpsWorks::Layer",
+            "AWS::OpsWorks::Stack",
+            "AWS::OpsWorksCM::Server",
+            "AWS::Organizations::Account",
+            "AWS::Organizations::OrganizationalUnit",
+            "AWS::Organizations::Policy",
+            "AWS::Organizations::ResourcePolicy",
+            "AWS::OSIS::Pipeline",
+            "AWS::Panorama::ApplicationInstance",
+            "AWS::Panorama::Package",
+            "AWS::Pipes::Pipe",
+            "AWS::Proton::EnvironmentAccountConnection",
+            "AWS::Proton::EnvironmentTemplate",
+            "AWS::Proton::ServiceTemplate",
+            "AWS::QLDB::Ledger",
+            "AWS::QLDB::Stream",
             "AWS::QuickSight::Theme",
             "AWS::QuickSight::Analysis",
             "AWS::QuickSight::Dashboard",
             "AWS::QuickSight::DataSet",
             "AWS::QuickSight::DataSource",
             "AWS::QuickSight::Template",
+            "AWS::RAM::Permission",
+            "AWS::RAM::ResourceShare",
             "AWS::RDS::DBInstance",
             "AWS::RDS::DBCluster",
             "AWS::RDS::DBClusterParameterGroup",
@@ -187,11 +489,23 @@ class Tagger:
             "AWS::Redshift::ClusterSecurityGroup",
             "AWS::Redshift::ClusterSubnetGroup",
             "AWS::Redshift::EventSubscription",
+            "AWS::RedshiftServerless::Namespace",
+            "AWS::RedshiftServerless::Workgroup",
+            "AWS::Rekognition::Collection",
+            "AWS::Rekognition::StreamProcessor",
+            "AWS::ResilienceHub::App",
+            "AWS::ResilienceHub::ResiliencyPolicy",
+            "AWS::ResourceExplorer2::Index",
+            "AWS::ResourceExplorer2::View",
+            "AWS::Route53RecoveryControl::Cluster",
+            "AWS::Route53RecoveryControl::ControlPanel",
+            "AWS::Route53RecoveryControl::SafetyRule",
             "AWS::Route53Resolver::FirewallDomainList",
             "AWS::Route53Resolver::FirewallRuleGroup",
             "AWS::Route53Resolver::FirewallRuleGroupAssociation",
             "AWS::Route53Resolver::ResolverEndpoint",
             "AWS::Route53Resolver::ResolverRule",
+            "AWS::RUM::AppMonitor",
             "AWS::S3::Bucket",
             "AWS::S3::StorageLens",
             "AWS::SageMaker::App",
@@ -217,9 +531,19 @@ class Tagger:
             "AWS::SageMaker::Project",
             "AWS::SageMaker::UserProfile",
             "AWS::SageMaker::Workteam",
+            "AWS::Scheduler::ScheduleGroup",
             "AWS::SecretsManager::Secret",
             "AWS::Serverless::Function",
+            "AWS::ServiceCatalog::CloudFormationProduct",
+            "AWS::ServiceCatalog::CloudFormationProvisionedProduct",
+            "AWS::ServiceCatalog::Portfolio",
+            "AWS::ServiceCatalogAppRegistry::Application",
+            "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+            "AWS::SecurityHub::AutomationRule",
+            "AWS::SecurityHub::Hub",
             "AWS::SES::ContactList",
+            "AWS::Shield::Protection",
+            "AWS::Shield::ProtectionGroup",
             "AWS::SNS::Topic",
             "AWS::SQS::Queue",
             "AWS::StepFunctions::Activity",
@@ -229,6 +553,7 @@ class Tagger:
             "AWS::SSM::Parameter",
             "AWS::SSM::PatchBaseline",
             "AWS::Synthetics::Canary",
+            "AWS::Synthetics::Group",
             "AWS::WAFv2::IPSet",
             "AWS::WAFv2::RegexPatternSet",
             "AWS::WAFv2::RuleGroup",
@@ -258,7 +583,7 @@ class Tagger:
             )
             sys.exit(1)
 
-        obligatory_tags_str = os.getenv("CFN_TAGS")
+        obligatory_tags_str = load_config()
         try:
             obligatory_tags = json.loads(obligatory_tags_str)
         except json.decoder.JSONDecodeError as e:
@@ -406,12 +731,20 @@ class Tagger:
                         )
                         self.stats[item]["addedtags"].append(obligtag)
 
-                        addtags = OrderedDict(
-                            {
-                                "Key": obligtag,
-                                "Value": f"{self.obligatory_tags[obligtag]}",
-                            }
-                        )
+                        if restype in self.resourcetypes_json:
+                            addtags = OrderedDict(
+                                {
+                                    obligtag: self.obligatory_tags[obligtag]
+                                }
+                            )
+                        else:
+                            addtags = OrderedDict(
+                                {
+                                    "Key": obligtag,
+                                    "Value": f"{self.obligatory_tags[obligtag]}",
+                                }
+                            )
+
                         if "Properties" in self.resources[item]:
                             if "Tags" not in self.resources[item].get("Properties"):
                                 # Resource support tags, but hasn't any
@@ -431,12 +764,19 @@ class Tagger:
 
                 if self.git:
                     found_git_tags = self.get_git_tags(self.filename)
-                    gittags = OrderedDict(
-                        {
-                            "Key": "gitrepo",
-                            "Value": found_git_tags['gitrepo']
-                        }
-                    )
+                    if restype in self.resourcetypes_json:
+                        gittags = OrderedDict(
+                            {
+                                "gitrepo": found_git_tags['gitrepo']
+                            }
+                        )
+                    else:
+                        gittags = OrderedDict(
+                            {
+                                "Key": "gitrepo",
+                                "Value": found_git_tags['gitrepo']
+                            }
+                        )
                     if "Tags" in self.resources[item].get("Properties"):
                         self.resources[item].get("Properties").get("Tags").append(
                                 gittags
@@ -444,12 +784,19 @@ class Tagger:
                     else:
                         self.resources[item]["Properties"]["Tags"] = [gittags]
 
-                    gittags = OrderedDict(
-                        {
-                            "Key": "gitfile",
-                            "Value": found_git_tags['gitfile']
-                        }
-                    )
+                    if restype in self.resourcetypes_json:
+                        gittags = OrderedDict(
+                            {
+                                "gitfile": found_git_tags['gitfile']
+                            }
+                        )
+                    else:
+                        gittags = OrderedDict(
+                            {
+                                "Key": "gitfile",
+                                "Value": found_git_tags['gitfile']
+                            }
+                        )
                     self.resources[item].get("Properties").get("Tags").append(
                             gittags
                     )

@@ -31,7 +31,7 @@ def test_found_tags(mock_env_single_custom_tag):
                     stderr=result.stderr
                 )
         except subprocess.CalledProcessError as e:
-            raise Exception("[FAIL] Could not execute cfn-lint => " + str(e))
+            raise RuntimeError("[FAIL] Could not execute cfn-lint => " + str(e))
 
     else:
         # our cfntagger command changes one of our cfn templates, lets reset it
@@ -48,4 +48,4 @@ def test_found_tags(mock_env_single_custom_tag):
                         stderr=result.stderr
                     )
             except subprocess.CalledProcessError as e:
-                raise Exception("[FAIL] Could not restore s3 test template => " + str(e))
+                raise RuntimeError("[FAIL] Could not restore s3 test template => " + str(e))

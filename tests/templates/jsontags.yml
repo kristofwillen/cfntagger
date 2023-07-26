@@ -1,0 +1,40 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates EC2 instances
+
+Resources:
+  ResourceWithTags:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: a1.xlarge
+      ImageId: ami-deadb33f
+      Tags:
+        - Key: Application
+          Value: Aviato
+
+  ResourceWithoutTags:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: a1.large
+      ImageId: ami-deadb33f
+
+  ResourceWithJsonTags:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: APoliciyArnParameter
+      Name: APolicyParameterName
+      Type: String
+      Value: ADeployPolicy
+      Tags:
+          CostCenter: Sales
+          Application: Aviato
+          Owner: erlich@aviato.com
+          Environment: Production
+
+  ResourceWithoutJsonTags:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: AviatoParameter
+      Name: AviatoParameterName
+      Type: String
+      Value: AviatoDeployPolicy

@@ -1,9 +1,14 @@
-.PHONY: test build
+.PHONY: test
 
-all: clean test build
+GITFILES=$(shell git ls-files '*.py')
+
+all: clean lint test build
 
 test:
 	pipenv run pytest -vv
+
+lint:
+	pylint $(GITFILES)
 
 build:
 	/usr/bin/env python3 ./setup.py bdist_wheel

@@ -5,11 +5,11 @@
 #    pipenv lock --requirements
 #
 
--i https://pypi.org/simple
+-i https://pypi.org/simple/
 colorama==0.4.4
-gitdb==4.0.9; python_version >= '3.6'
-gitpython==3.1.27
-ruamel.yaml.clib==0.2.6; python_version < '3.11' and platform_python_implementation == 'CPython'
+gitdb==4.0.10; python_version >= '3.7'
+gitpython==3.1.30
+ruamel.yaml.clib==0.2.7; python_version < '3.11' and platform_python_implementation == 'CPython'
 ruamel.yaml==0.17.21
 smmap==5.0.0; python_version >= '3.6'
-typing-extensions==4.1.1; python_version < '3.8'
+typing-extensions==4.4.0; python_version < '3.8'

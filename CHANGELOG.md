@@ -1,10 +1,17 @@
 # Cfntagger changes
 
+## v0.10.0
+- 20230708
+- Add feature request for version number #5 (configfile)
+- Add feature request for version number #13 (version)
+- Support for additional CloudFormation resources
+- Always generate correct tag format (json/list), cfr issue #14
+
 ## v0.9.8
 - 20220721
 - Fix #7 where the gitfile sometimes has a wrong relative path
 
-## v0.9.7
+## v0.9.7
 - 20220715
 - Fix #6 where an UnboudLocalError is produced when passing -g
   with an empty CFN_TAGS
