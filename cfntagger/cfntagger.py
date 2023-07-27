@@ -648,9 +648,10 @@ class Tagger:
             # Python 3 interprets string literals as Unicode strings
             # and therefore \s is treated as an escaped Unicode character.
             # We must declare our RegEx pattern as a raw string by prepending r
+
             if re.search(r'^\s+Type:\s*AWS', line):
+                # Extracting the resource type from Type: AWS::xx::yy
                 ResourceType = ':'.join(line.split(':')[1:]).strip()
-                #print(f'I found >{ResourceType}<')
                 UseJsonTags =  ResourceType in self.resourcetypes_json
 
             if line.strip().startswith('Tags:'):
@@ -663,16 +664,11 @@ class Tagger:
                 # Single word followed by a colon --> start of a new resource block
                 TagBlock = False
 
-            if TagBlock:
-                #print('[DBUG] tag block detected')
-                if UseJsonTags:
-                    #print('[DBUG] JsonTag block detected')
-                    if line.strip().startswith('- Key:'):
-                        # Found a -Key: value pair which we must replace with "tagkey: tagvalue"
-                        tagvalue = ''.join(cfnlist[i+1].strip().split(':')[1:]).strip()
-                        cfnlist[i] = line.replace('- Key:', " ")
-                        cfnlist[i] += f": {tagvalue}"
-                        del cfnlist[i+1]
+            if TagBlock and UseJsonTags and line.strip().startswith('- Key:'):
+                tagvalue = ''.join(cfnlist[i+1].strip().split(':')[1:]).strip()
+                cfnlist[i] = line.replace('- Key:', " ")
+                cfnlist[i] += f": {tagvalue}"
+                del cfnlist[i+1]
 
         return '\n'.join(cfnlist)
 
