@@ -634,6 +634,7 @@ class Tagger:
         except KeyError:
             return []
 
+
     def cfntransformer(self, s: str) -> str:
         """
         This function removes faulty tag formatting from a yaml.dump result
@@ -839,5 +840,5 @@ class Tagger:
             return yaml.dump(self.data, sys.stdout, transform=self.cfntransformer)
         else:
             print("Writing file...")
-            with open(self.filename, "wb") as file:
-                return yaml.dump(self.data, file)
+            with open(self.filename, "w") as file:
+                return yaml.dump(self.data, file, transform=self.cfntransformer)
