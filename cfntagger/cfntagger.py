@@ -6,8 +6,8 @@ import json
 from typing import List, Dict
 from configparser import ConfigParser
 import git
-from ruamel.yaml import YAML
 from colorama import Fore, Style
+from ruamel.yaml import YAML
 
 
 def get_tag_kv(resourcetag, resourcetaglist):
@@ -61,6 +61,7 @@ def load_config():
         sys.exit(1)
 
     return configstr
+
 
 
 class Tagger:
@@ -633,6 +634,48 @@ class Tagger:
         except KeyError:
             return []
 
+    def cfntransformer(self, s: str) -> str:
+        """
+        This function removes faulty tag formatting from a yaml.dump result
+        """
+
+        cfnlist = s.split('\n')
+        UseJsonTags = False
+        TagBlock = False
+
+        for i, line in enumerate(cfnlist):
+            # Python 3 interprets string literals as Unicode strings
+            # and therefore \s is treated as an escaped Unicode character.
+            # We must declare our RegEx pattern as a raw string by prepending r
+            if re.search(r'^\s+Type:\s*AWS', line):
+                ResourceType = ':'.join(line.split(':')[1:]).strip()
+                #print(f'I found >{ResourceType}<')
+                UseJsonTags =  ResourceType in self.resourcetypes_json
+
+            if line.strip().startswith('Tags:'):
+                TagBlock = True
+                if cfnlist[i-1] == '':
+                    # we have an empty line before a tag block, let's remove it
+                    del cfnlist[i-1]
+
+            if re.search(r'^\s+\w:\s*$', line):
+                # Single word followed by a colon --> start of a new resource block
+                TagBlock = False
+
+            if TagBlock:
+                #print('[DBUG] tag block detected')
+                if UseJsonTags:
+                    #print('[DBUG] JsonTag block detected')
+                    if line.strip().startswith('- Key:'):
+                        # Found a -Key: value pair which we must replace with "tagkey: tagvalue"
+                        tagvalue = ''.join(cfnlist[i+1].strip().split(':')[1:]).strip()
+                        cfnlist[i] = line.replace('- Key:', " ")
+                        cfnlist[i] += f": {tagvalue}"
+                        del cfnlist[i+1]
+
+        return '\n'.join(cfnlist)
+
+
     def get_git_path(self, filename: str) -> str:
         """
         Returns the relative path for a file from the repo root dir
@@ -731,19 +774,13 @@ class Tagger:
                         )
                         self.stats[item]["addedtags"].append(obligtag)
 
-                        if restype in self.resourcetypes_json:
-                            addtags = OrderedDict(
-                                {
-                                    obligtag: self.obligatory_tags[obligtag]
-                                }
-                            )
-                        else:
-                            addtags = OrderedDict(
-                                {
-                                    "Key": obligtag,
-                                    "Value": f"{self.obligatory_tags[obligtag]}",
-                                }
-                            )
+
+                        addtags = OrderedDict(
+                            {
+                                "Key": obligtag,
+                                "Value": f"{self.obligatory_tags[obligtag]}",
+                            }
+                        )
 
                         if "Properties" in self.resources[item]:
                             if "Tags" not in self.resources[item].get("Properties"):
@@ -764,19 +801,13 @@ class Tagger:
 
                 if self.git:
                     found_git_tags = self.get_git_tags(self.filename)
-                    if restype in self.resourcetypes_json:
-                        gittags = OrderedDict(
-                            {
-                                "gitrepo": found_git_tags['gitrepo']
-                            }
-                        )
-                    else:
-                        gittags = OrderedDict(
-                            {
-                                "Key": "gitrepo",
-                                "Value": found_git_tags['gitrepo']
-                            }
-                        )
+
+                    gittags = OrderedDict(
+                        {
+                            "Key": "gitrepo",
+                            "Value": found_git_tags['gitrepo']
+                        }
+                    )
                     if "Tags" in self.resources[item].get("Properties"):
                         self.resources[item].get("Properties").get("Tags").append(
                                 gittags
@@ -784,19 +815,12 @@ class Tagger:
                     else:
                         self.resources[item]["Properties"]["Tags"] = [gittags]
 
-                    if restype in self.resourcetypes_json:
-                        gittags = OrderedDict(
-                            {
-                                "gitfile": found_git_tags['gitfile']
-                            }
-                        )
-                    else:
-                        gittags = OrderedDict(
-                            {
-                                "Key": "gitfile",
-                                "Value": found_git_tags['gitfile']
-                            }
-                        )
+                    gittags = OrderedDict(
+                        {
+                            "Key": "gitfile",
+                            "Value": found_git_tags['gitfile']
+                        }
+                    )
                     self.resources[item].get("Properties").get("Tags").append(
                             gittags
                     )
@@ -812,7 +836,7 @@ class Tagger:
         if self.simulate:
             print(" ")
             # self.data['AWSTemplateFormatVersion'] = '2010-09-09'
-            return yaml.dump(self.data, sys.stdout)
+            return yaml.dump(self.data, sys.stdout, transform=self.cfntransformer)
         else:
             print("Writing file...")
             with open(self.filename, "wb") as file:
