@@ -52,6 +52,7 @@ def load_config():
         print('[INFO] Using config from config file')
 
     config = ConfigParser()
+    config.optionxform = str
     config.read(configfile)
     config_parser_dict = {s:dict(config.items(s)) for s in config.sections()}
     try:
