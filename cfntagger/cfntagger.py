@@ -837,5 +837,5 @@ class Tagger:
             return yaml.dump(self.data, sys.stdout, transform=self.cfntransformer)
         else:
             print("Writing file...")
-            with open(self.filename, "w") as file:
+            with open(self.filename, "w", encoding='utf-8') as file:
                 return yaml.dump(self.data, file, transform=self.cfntransformer)
