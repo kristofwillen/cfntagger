@@ -125,7 +125,6 @@ class Tagger:
             "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Theme",
             "AWS::AccessAnalyzer::Analyzer",
-            "AWS::ApiGatewayV2::Api",
             "AWS::ApiGateway::ClientCertificate",
             "AWS::ApiGateway::DomainName",
             "AWS::ApiGateway::RestApi",
