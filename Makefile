@@ -1,4 +1,4 @@
-.PHONY: test
+.PHONY: build test
 
 GITFILES=$(shell git ls-files '*.py')
 
