@@ -34,7 +34,7 @@ def get_list_of_comments(l: list) -> list:
     This function returns a list of comments from a list of strings (lines) with newline
     characters removed
     """
-    commentRegex = re.compile('^\s*#')
+    commentRegex = re.compile(r'^\s*#')
     return [ item.rstrip() for item in list(filter(commentRegex.match, l))]
 
 
@@ -577,7 +577,7 @@ class Tagger:
             "AWS::Serverless::Api",
             "AWS::Serverless::Application",
             "AWS::Serverless::Function",
-            "AWS::Serverless::HttpApi"
+            "AWS::Serverless::HttpApi",
             "AWS::ServiceCatalog::CloudFormationProduct",
             "AWS::ServiceCatalog::CloudFormationProvisionedProduct",
             "AWS::ServiceCatalog::Portfolio",
@@ -724,14 +724,13 @@ class Tagger:
         cfncommentlist = get_list_of_comments(cfnlist)
         diff = list(set(self.lines_of_comments).symmetric_difference(set(cfncommentlist)))
         if len(diff) > 0:
-            print(f'[WARN] Detecting possible loss of comment lines, correcting...')
+            print('[WARN] Detecting possible loss of comment lines, correcting...')
 
             # Try to reinsert comments at end of resoure block
-            IdentifiedResource = False
+            # pylint: disable-next=consider-using-dict-items
             for res in self.resource_comments:
                 for i, line in enumerate(cfnlist):
                     if line.startswith(f'  {res}:'):
-                        IdentifiedResource = True
                         # Loop untill we've found a new resource and insert comments before
                         j = i+1
                         while j<len(cfnlist) and not re.search(r'^\s\s\w+:', cfnlist[j]):
