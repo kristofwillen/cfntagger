@@ -51,13 +51,13 @@ def get_dict_of_comments(l: list) -> dict:
         if re.search(r'^\s\s\w+:', line):
             print('DBUG found a res')
             # Single word followed by a colon --> start of a new resource block
-            if InResourceBlock:
-                # Starting a new resource block, store the previous resource
-                comment_dict[resource] = resource_comments
-
             resource = line.strip().split(':')[0]
             resource_comments = []
             InResourceBlock = True
+
+            if InResourceBlock:
+                # Starting a new resource block, store the previous resource
+                comment_dict[resource] = resource_comments
 
         if re.search(r'^\s*#', line) and InResourceBlock:
             resource_comments.append(line.rstrip())
