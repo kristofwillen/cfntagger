@@ -29,6 +29,42 @@ def get_tag_kv(resourcetag, resourcetaglist):
         return resourcetag, resourcetaglist.get(resourcetag)
 
 
+def get_list_of_comments(l: list) -> list:
+    """
+    This function returns a list of comments from a list of strings (lines) with newline
+    characters removed
+    """
+    commentRegex = re.compile('^\s*#')
+    return [ item.rstrip() for item in list(filter(commentRegex.match, l))]
+
+
+def get_dict_of_comments(l: list) -> dict:
+    """
+    This function loops over a cfn file and extracts a dict Resource: [ list, of, comment, lines]
+    """
+
+    comment_dict = {}
+    InResourceBlock = False
+
+    for line in l:
+        print(f"Getting line {line}")
+        if re.search(r'^\s\s\w+:', line):
+            print('DBUG found a res')
+            # Single word followed by a colon --> start of a new resource block
+            if InResourceBlock:
+                # Starting a new resource block, store the previous resource
+                comment_dict[resource] = resource_comments
+
+            resource = line.strip().split(':')[0]
+            resource_comments = []
+            InResourceBlock = True
+
+        if re.search(r'^\s*#', line) and InResourceBlock:
+            resource_comments.append(line.rstrip())
+
+    return comment_dict
+
+
 def load_config():
     """
     This function constructs a JSON string with the tags to add, either found in (in this order):
@@ -575,6 +611,13 @@ class Tagger:
         try:
             with open(filename, encoding='utf-8') as cfn:
                 self.data = yaml.load(cfn)
+
+            with open(filename, encoding='utf-8') as cfn:
+                cfncontent = cfn.readlines()
+
+            self.lines_of_comments = get_list_of_comments(cfncontent)
+            self.nr_of_lines_of_comments = len(self.lines_of_comments)
+            self.resource_comments = get_dict_of_comments(cfncontent)
         except FileNotFoundError:
             print(f"{Fore.RED}FAIL: Please provide a valid filename{Style.RESET_ALL}")
             sys.exit(1)
@@ -669,6 +712,29 @@ class Tagger:
                 cfnlist[i] = line.replace('- Key:', " ")
                 cfnlist[i] += f": {tagvalue}"
                 del cfnlist[i+1]
+
+        # Let's warn if comments are dropped
+        cfncommentlist = get_list_of_comments(cfnlist)
+        diff = list(set(self.lines_of_comments).symmetric_difference(set(cfncommentlist)))
+        if len(diff) > 0:
+            print(f'[WARN] Detecting possible loss of comment lines, correcting...')
+
+            # Try to reinsert comments at end of resoure block
+            IdentifiedResource = False
+            for res in self.resource_comments:
+                for i, line in enumerate(cfnlist):
+                    if line.startswith(f'  {res}:'):
+                        IdentifiedResource = True
+                        # Loop untill we've found a new resource and insert comments before
+                        j = i+1
+                        while j<len(cfnlist) and not re.search(r'^\s\s\w+:', cfnlist[j]):
+                            j += 1
+
+                        for z in self.resource_comments[res]:
+                            cfnlist.insert(j, z)
+                            j += 1
+
+                        break
 
         return '\n'.join(cfnlist)
 
