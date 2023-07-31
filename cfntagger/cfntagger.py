@@ -47,9 +47,8 @@ def get_dict_of_comments(l: list) -> dict:
     InResourceBlock = False
 
     for line in l:
-        print(f"Getting line {line}")
+        #print(f"Getting line {line}")
         if re.search(r'^\s\s\w+:', line):
-            print('DBUG found a res')
             # Single word followed by a colon --> start of a new resource block
             resource = line.strip().split(':')[0]
             resource_comments = []
@@ -737,8 +736,9 @@ class Tagger:
                             j += 1
 
                         for z in self.resource_comments[res]:
-                            cfnlist.insert(j, z)
-                            j += 1
+                            if z in diff:
+                                cfnlist.insert(j, z)
+                                j += 1
 
                         break
 

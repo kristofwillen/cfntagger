@@ -14,7 +14,7 @@ def mock_env_single_custom_tag(monkeypatch):
 cfn_template = "./tests/templates/comments.yml"
 testcase = CfnTestTemplate(cfn_template)
 
-@pytest.mark.skip(reason="waiting for upstream to fix this")
+#@pytest.mark.skip(reason="waiting for upstream to fix this")
 def test_comments(mock_env_single_custom_tag):
     cfn_tagger = Tagger(filename=cfn_template, simulate=True)
 
@@ -26,7 +26,8 @@ def test_comments(mock_env_single_custom_tag):
     # restore original stdout
     sys.stdout = sys.__stdout__
 
-    match = re.findall('# Line [1-5]', result)
+    match = re.findall('# Line [1-6]', result)
+    print(match)
 
     # Assume we have still some comments
     assert len(match) > 0
