@@ -19,14 +19,14 @@ setup(
     license="GPL",
     keywords="cloudformation tagging",
     install_requires=[
-        'ruamel.yaml==0.17.21',
+        'ruamel.yaml>=0.17.24',
         'colorama>=0.4.4',
-        'gitpython>=3.1.27'
+        'gitpython>=3.1.34'
     ],
     tests_require=[
         'pytest-cov>=3.0.0',
-        'cfn-lint>=0.58.1',
-        'pytest>=7.1.1'
+        'cfn-lint>=0.77.0',
+        'pytest>=7.3.0'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
