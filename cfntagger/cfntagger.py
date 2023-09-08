@@ -78,7 +78,6 @@ class Tagger:
         self.git = setgit
         self.has_properties = True
         self.resourcetypes_json = [
-            "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Component",
             "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Theme",
@@ -111,6 +110,7 @@ class Tagger:
             "AWS::ResilienceHub::ResiliencyPolicy",
             "AWS::ResourceExplorer2::Index",
             "AWS::ResourceExplorer2::View",
+            "AWS::Serverless::Function",
             "AWS::ServiceCatalogAppRegistry::Application",
             "AWS::ServiceCatalogAppRegistry::AttributeGroup",
             "AWS::SecurityHub::AutomationRule",
@@ -125,7 +125,6 @@ class Tagger:
             "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Theme",
             "AWS::AccessAnalyzer::Analyzer",
-            "AWS::ApiGatewayV2::Api",
             "AWS::ApiGateway::ClientCertificate",
             "AWS::ApiGateway::DomainName",
             "AWS::ApiGateway::RestApi",
@@ -552,8 +551,8 @@ class Tagger:
             "AWS::StepFunctions::StateMachine",
             "AWS::SSM::Document",
             "AWS::SSM::MaintenanceWindow",
-            "AWS::SSM::Parameter",
             "AWS::SSM::PatchBaseline",
+            "AWS::SSM::Parameter",
             "AWS::Synthetics::Canary",
             "AWS::Synthetics::Group",
             "AWS::WAFv2::IPSet",
