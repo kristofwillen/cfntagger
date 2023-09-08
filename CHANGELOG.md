@@ -1,4 +1,8 @@
 # Cfntagger changes
+## v0.10.3
+- 20230908
+- Fixes #25: AWS::Serverless::Function has map based tags (really!)
+m
 ## v0.10.2
 - 20230908
 - Fixes #25: AWS::Serverless::Function has map based tags

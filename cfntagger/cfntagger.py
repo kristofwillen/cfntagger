@@ -78,7 +78,6 @@ class Tagger:
         self.git = setgit
         self.has_properties = True
         self.resourcetypes_json = [
-            "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Component",
             "AWS::AmplifyUIBuilder::Form",
             "AWS::AmplifyUIBuilder::Theme",
@@ -535,6 +534,7 @@ class Tagger:
             "AWS::SageMaker::Workteam",
             "AWS::Scheduler::ScheduleGroup",
             "AWS::SecretsManager::Secret",
+            "AWS::Serverless::Function",
             "AWS::ServiceCatalog::CloudFormationProduct",
             "AWS::ServiceCatalog::CloudFormationProvisionedProduct",
             "AWS::ServiceCatalog::Portfolio",
@@ -551,8 +551,8 @@ class Tagger:
             "AWS::StepFunctions::StateMachine",
             "AWS::SSM::Document",
             "AWS::SSM::MaintenanceWindow",
-            "AWS::SSM::Parameter",
             "AWS::SSM::PatchBaseline",
+            "AWS::SSM::Parameter",
             "AWS::Synthetics::Canary",
             "AWS::Synthetics::Group",
             "AWS::WAFv2::IPSet",
