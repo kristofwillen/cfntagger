@@ -696,6 +696,7 @@ class Tagger:
         Returns a dict of gitrepo & gitfile tags
         """
 
+        gitdict = {}
         if self.git:
             try:
                 repo = git.Repo(os.getcwd(), search_parent_directories=True)
